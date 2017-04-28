@@ -1,14 +1,46 @@
 Due 4/28/2017 @ 11:59pm
 
 
+-----------------------------------------------------------------------------
+
 (1) Describe what you're going to do
 
+    I am going to write a NES emulator. It will be able to read in a NES ROM binary file and emulate a 6052 processor to execute the instructions. Ideally, I will get graphics and keyboard input working by the deadline, which would allow for a demo. Graphics will be done using a VNC client. However, my first focus (and the majority of the project) is the 6052 emulator, as this is most directly related to 429H.
+
+-----------------------------------------------------------------------------
 
 (2) What was the hardest assignment?
 
+    The hardest assignment was pa - adding forwarding and branch prediction to pipelining. The reason I claim this is described further in question 3.
+
+-----------------------------------------------------------------------------
 
 (3) Why is your proposal harder than your answer to question #2?
 
+    In order to convincingly answer this question, I define the concept of a project being 'hard' as having three dimensions:
+
+    1) Learning:
+       The project involves learning new material and applying those concepts to the project.
+    2) Effort:
+       Implementation is non-trivial: you need to invest significant amounts of time to write & debug.
+    3) Critical Thinking:  
+       There are several potential approaches, and thinking about the tradeoffs between implementations is necessary.
+
+
+   I claim that pa was the hardest project so far mainly because of the second factor above, although there were elements of both #1 and #3 involved in its implementation. My main problem with pa was that, rushed to finish p9 on time, I had several hacky fixes and bugs in my p9 submission, which made the effort required to implement pa disproportionate. pa certainly did involve a lot of learning, especially about pipelining and things like two-level branch predictors, but this was overshadowed by the implementation problems.
+
+   My second claim is that the NES emulator is a *significantly* harder project to undertake than pa was, and looking at all three of the above factors rapidly makes this clear. First, NES outweighs pa immensely in terms of learning. In addition to scouring the documentation for and and implementing an entirely new instruction set (the 6502) as well as registers and flags, I also have to learn about loading and parsing the ROM as well as keyboard input and executables. In fact, my NES proposal is probably the best project from p1-pd in terms of learning new material, outweighing even the extensive independent research we did for pc.
+
+   The second factor is effort, and immediately the fact that writing a functional emulator for even a single game will require modeling memory as well as implementing ~56 separate instructions makes it relatively clear that this project will not be trivial. The second part of my argument is that while it's difficult to choose a project based on its potential for susceptibility to bugs (and thus, effort), this factor is also undesirable. Arguably, the second factor of what makes a project 'hard' - the number of bugs encountered - is by no means even a metric you should necessarily look towards when evaluating difficulty; rather, it's just something that comes to mind. Learning and critical thinking are far more important to prioritize.
+
+   Finally, critical thinking is crucial, especially during the part of the project where we need to create data structures that model the internal state of the processor (registers, a memory API, etc). as well as the solutions to the graphics and keyboard input problem. While I obviously haven't figured these out yet, the project is sufficiently complex to offer several potential routes for implementation and the relative costs, benefits, and tradeoffs of each approach will need to be evaluated.
+
+   For these reasons, it's clear a NES emulator as pd would be by far the most difficult project I'll undertake in CS 429H.
+
+-----------------------------------------------------------------------------
 
 (4) Why is this interesting?
 
+    It's a NES emulator! You get to write software that runs video games, all while learning about how graphics & input work as well as actually making something usable. This will be the most interesting piece of software I have written this year.
+
+-----------------------------------------------------------------------------

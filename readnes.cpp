@@ -41,7 +41,7 @@ void load_into_memory() {
     }
 }
 
-uint16_t setup(char* filename) {
+void setup(char* filename) {
     FILE* fp = fopen(filename, "rb"); // file opening taken from my pc
     fseek(fp, 0, SEEK_END);
     size = ftell(fp);
@@ -55,6 +55,4 @@ uint16_t setup(char* filename) {
 
     read_nes_header(); // the file is now in exe!
     load_into_memory();
-
-    return 0; // TODO return the pc to start at!
 }

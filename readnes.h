@@ -1,8 +1,8 @@
 #ifndef READNES_H
 #define READNES_H
 
-extern unsigned char *prg, *chr;
+extern unsigned char *prg, *chr, *exe;
 
-uint16_t setup(char* filename);
+void setup(char* filename);
 
 #endif

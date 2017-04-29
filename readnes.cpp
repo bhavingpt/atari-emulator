@@ -8,7 +8,7 @@
 unsigned char *temp, *exe, *prg, *chr;
 int prg_pages;
 int chr_pages;
-int fSize;
+int size;
 
 void unhex(unsigned char one, unsigned char two, int pos) {
     int val_one = (one <= '9') ? one - '0' : one + 10 - 'a';
@@ -19,7 +19,7 @@ void unhex(unsigned char one, unsigned char two, int pos) {
 void read_nes_header() {
     int i = 0;
     int exe_pos = 0;
-    while (i < fSize) {
+    while (i < size) {
         if (temp[i] != '\n' && temp[i] != ' ') {
             unhex(temp[i], temp[i+1], exe_pos);
             i++;
@@ -44,13 +44,13 @@ void load_into_memory() {
 uint16_t setup(char* filename) {
     FILE* fp = fopen(filename, "rb"); // file opening taken from my pc
     fseek(fp, 0, SEEK_END);
-    fSize = ftell(fp);
+    size = ftell(fp);
     fseek(fp, 0, SEEK_SET); // rewind the file
 
-    exe = (unsigned char *) malloc(fSize * sizeof(char));
-    temp = (unsigned char *) malloc(fSize * sizeof(char));
+    exe = (unsigned char *) malloc(size * sizeof(char));
+    temp = (unsigned char *) malloc(size * sizeof(char));
 
-    fread(temp, 1, fSize, fp); // read the file into temp
+    fread(temp, 1, size, fp); // read the file into temp
     fclose(fp);
 
     read_nes_header(); // the file is now in exe!

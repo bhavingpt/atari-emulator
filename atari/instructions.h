@@ -10,7 +10,7 @@ public:
 extern std::unordered_map<unsigned char, Instruction*> table;
 extern uint16_t pc;
 extern uint8_t a, x, y, sp, p;
-extern char running;
+extern unsigned long long running;
 
 void initialize_instructions();
 

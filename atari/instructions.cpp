@@ -6,6 +6,7 @@
 using namespace std;
 
 unordered_map<unsigned char, Instruction*> table;
+unsigned char temp;
 
 void set(int idx) {
     p |= (1 << idx);
@@ -13,6 +14,11 @@ void set(int idx) {
 
 void clr(int idx) {
     p &= ~(1 << idx);
+}
+
+void write(unsigned char value, uint16_t location) {
+    // TODO implement this (with mirroring);
+    // TODO ALWAYS read from zero page if its zero paged
 }
 
 class _78 : public Instruction {
@@ -53,7 +59,7 @@ class _E8 : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO E8: increment x by one\n");
+        x++;
         (x == 0) ? set(1) : clr(1);
         (x >> 7) ? set(7) : clr(7);
     }
@@ -73,7 +79,8 @@ class _95 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 95: store X's value\n");
+        printf("%04x:", pc);
+        printf("TODO 95: write + signed\n");
     }
 };
 
@@ -81,7 +88,8 @@ class _D0 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO D0: cond jump w signed offset\n");
+        printf("%04x:", pc);
+        printf("TODO D0: jump + signed\n");
     }
 };
 
@@ -89,7 +97,7 @@ class _86 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 86: store X's value\n");
+        write(x, one);
     }
 };
 
@@ -97,7 +105,8 @@ class _BD : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO BD: load with signed offset\n");
+        printf("%04x:", pc);
+        printf("TODO BD: signed offset\n");
         (a == 0) ? set(1) : clr(1);
         (a >> 7) ? set(7) : clr(7);
     }
@@ -117,7 +126,8 @@ class _94 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 94: store Y's value\n");
+        printf("%04x:", pc);
+        printf("TODO 94: write + signed\n");
     }
 };
 
@@ -125,7 +135,7 @@ class _C8 : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO C8: increment y by one\n");
+        y++;
         (y == 0) ? set(1) : clr(1);
         (y >> 7) ? set(7) : clr(7);
     }
@@ -135,7 +145,7 @@ class _CA : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO CA: decrement x by one\n");
+        x--;
         (x == 0) ? set(1) : clr(1);
         (x >> 7) ? set(7) : clr(7);
     }
@@ -145,7 +155,8 @@ class _10 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 10: cond jump w signed offset\n");
+        printf("%04x:", pc);
+        printf("TODO 10: jump + signed\n");
     }
 };
 
@@ -153,7 +164,7 @@ class _84 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 10: store Y's value\n");
+        write(y, one);
     }
 };
 
@@ -161,6 +172,7 @@ class _20 : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
+        printf("%04x:", pc);
         printf("TODO 20: stack and subroutine call\n");
     }
 };
@@ -179,7 +191,7 @@ class _85 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 85: store A's value\n");
+        write(a, one);
     }
 };
 
@@ -187,7 +199,7 @@ class _8E : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 8E: store X's value\n");
+        write(x, one + (two << 8));
     }
 };
 
@@ -195,7 +207,9 @@ class _E6 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO E6: increment memory, set flags\n");
+        write(++mem[one], one);
+        (mem[one] == 0) ? set(1) : clr(1);
+        (mem[one] >> 7) ? set(7) : clr(7);
     }
 };
 
@@ -213,7 +227,9 @@ class _C6 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO C6: decrement memory, set flags\n");
+        write(--mem[one], one);
+        (mem[one] == 0) ? set(1) : clr(1);
+        (mem[one] >> 7) ? set(7) : clr(7);
     }
 };
 
@@ -292,7 +308,12 @@ class _26 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 26: shifting memory, set flags\n");
+        temp = mem[one] << 1;
+        (mem[one] >> 7) ? set(0) : clr(0);
+        if (p & 0x1) temp |= 0x1;
+        (temp == 0) ? set(1) : clr(1);
+        (temp >> 7) ? set(7) : clr(7);
+        write(temp, one);
     }
 };
 
@@ -310,7 +331,8 @@ class _F0 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO F0: cond jump w signed offset\n");
+        printf("%04x:", pc);
+        printf("TODO F0: signed jump\n");
     }
 };
 
@@ -326,7 +348,8 @@ class _69 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 69: this one is hard\n");
+        printf("%04x:", pc);
+        printf("TODO 69: signed\n");
     }
 };
 
@@ -374,7 +397,8 @@ class _B0 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO B0: cond jump w signed offset\n");
+        printf("%04x:", pc);
+        printf("TODO B0: signed jump\n");
     }
 };
 
@@ -382,7 +406,8 @@ class _B5 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO B5: load x w signed offset\n");
+        printf("%04x:", pc);
+        printf("TODO B5: signed\n");
         (a == 0) ? set(1) : clr(1);
         (a >> 7) ? set(7) : clr(7);
     }
@@ -392,7 +417,8 @@ class _39 : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 39: and w signed mem offset\n");
+        printf("%04x:", pc);
+        printf("TODO 39: signed\n");
         (a == 0) ? set(1) : clr(1);
         (a >> 7) ? set(7) : clr(7);
     }
@@ -402,7 +428,8 @@ class _55 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 55: eor w signed mem offset\n");
+        printf("%04x:", pc);
+        printf("TODO 55: signed\n");
         (a == 0) ? set(1) : clr(1);
         (a >> 7) ? set(7) : clr(7);
     }
@@ -412,7 +439,7 @@ class _88 : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 88: decrement y by one\n");
+        y--;
         (y == 0) ? set(1) : clr(1);
         (y >> 7) ? set(7) : clr(7);
     }
@@ -434,7 +461,8 @@ class _59 : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 59: eor w signed mem offset\n");
+        printf("%04x:", pc);
+        printf("TODO 59: signed\n");
         (a == 0) ? set(1) : clr(1);
         (a >> 7) ? set(7) : clr(7);
     }
@@ -444,7 +472,8 @@ class _4C : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 4C: don't actually do jumps, seq\n");
+        printf("%04x:", pc);
+        printf("TODO 4C: jump\n");
     }
 };
 
@@ -452,7 +481,8 @@ class _65 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 65: perform add w carry, flags\n");
+        printf("%04x:", pc);
+        printf("TODO 65: signed\n");
     }
 };
 
@@ -472,7 +502,8 @@ class _99 : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 99: store at signed offset\n");
+        printf("%04x:", pc);
+        printf("TODO 99: signed\n");
     }
 };
 
@@ -490,7 +521,8 @@ class _B1 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO B1: complicated indexing w signed\n");
+        printf("%04x:", pc);
+        printf("TODO B1: signed\n");
         (a == 0) ? set(1) : clr(1);
         (a >> 7) ? set(7) : clr(7);
     }
@@ -500,7 +532,8 @@ class _11 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 11: complicated or idx w signed\n");
+        printf("%04x:", pc);
+        printf("TODO 11: signed\n");
         (a == 0) ? set(1) : clr(1);
         (a >> 7) ? set(7) : clr(7);
     }
@@ -510,7 +543,7 @@ class _48 : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 48: push accumulator: write to mem\n");
+        write(a, sp--);
     }
 };
 
@@ -518,7 +551,8 @@ class _90 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 90: conditional jump instruction\n");
+        printf("%04x:", pc);
+        printf("TODO 90: jump\n");
     }
 };
 
@@ -526,7 +560,7 @@ class _68 : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 68: pull accumulator from the stack\n");
+        a = mem[++sp];
     }
 };
 
@@ -534,7 +568,7 @@ class _60 : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 60: return from subroutine\n");
+        printf("TODO 60: jump\n");
     }
 };
 
@@ -542,7 +576,8 @@ class _51 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 51: complicated eor indexing\n");
+        printf("%04x:", pc);
+        printf("TODO 51: signed\n");
         (a == 0) ? set(1) : clr(1);
         (a >> 7) ? set(7) : clr(7);
     }
@@ -552,7 +587,8 @@ class _B9 : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO B9: load signed offset\n");
+        printf("%04x:", pc);
+        printf("TODO B9: signed\n");
         (a == 0) ? set(1) : clr(1);
         (a >> 7) ? set(7) : clr(7);
     }
@@ -580,7 +616,8 @@ class _30 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 30: conditional jump\n");
+        printf("%04x:", pc);
+        printf("TODO 30: jump\n");
     }
 };
 
@@ -588,7 +625,8 @@ class _E9 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO E9: subtract from acc w carry\n");
+        printf("%04x:", pc);
+        printf("TODO E9: signed\n");
     }
 };
 
@@ -596,7 +634,8 @@ class _3D : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 3D: signed offset and\n");
+        printf("%04x:", pc);
+        printf("TODO 3D: signed\n");
         (a == 0) ? set(1) : clr(1);
         (a >> 7) ? set(7) : clr(7);
     }
@@ -616,7 +655,11 @@ class _06 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 06: misunderstanding shift docs\n");
+        temp = mem[one] << 1;
+        (mem[one] >> 7) ? set(0) : clr(0);
+        (temp == 0) ? set(1) : clr(1);
+        (temp >> 7) ? set(7) : clr(7);
+        write(temp, one);
     }
 };
 
@@ -644,7 +687,8 @@ class _B4 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO B4: load with signed offset\n");
+        printf("%04x:", pc);
+        printf("TODO B4: signed\n");
         (y == 0) ? set(1) : clr(1);
         (y >> 7) ? set(7) : clr(7);
     }
@@ -654,7 +698,8 @@ class _D5 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO D5: signed offset compare\n");
+        printf("%04x:", pc);
+        printf("TODO D5: signed\n");
     }
 };
 
@@ -672,7 +717,8 @@ class _BE : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO BE: load with signed offset\n");
+        printf("%04x:", pc);
+        printf("TODO BE: signed\n");
         (x == 0) ? set(1) : clr(1);
         (x >> 7) ? set(7) : clr(7);
     }
@@ -690,7 +736,8 @@ class _F5 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO F5: subtract operation\n");
+        printf("%04x:", pc);
+        printf("TODO F5: signed\n");
     }
 };
 
@@ -698,6 +745,7 @@ class _00 : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
+        printf("%04x:", pc);
         printf("TODO 00: break, flag and special behavior\n");
     }
 };
@@ -706,7 +754,8 @@ class _75 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 75: addition operation\n");
+        printf("%04x:", pc);
+        printf("TODO 75: signed\n");
     }
 };
 
@@ -724,7 +773,7 @@ class _08 : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 08: push processor to stack\n");
+        write(p, sp--);
     }
 };
 
@@ -732,7 +781,7 @@ class _28 : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 08: pull processor from stack\n");
+        p = mem[++sp];
     }
 };
 
@@ -740,7 +789,8 @@ class _19 : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 19: calculating signed offset\n");
+        printf("%04x:", pc);
+        printf("TODO 19: signed\n");
         (a == 0) ? set(1) : clr(1);
         (a >> 7) ? set(7) : clr(7);
     }
@@ -750,7 +800,8 @@ class _1E : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 1E: don't understand shift docs\n");
+        printf("%04x:", pc);
+        printf("TODO 1E: signed\n");
     }
 };
 
@@ -758,7 +809,8 @@ class _01 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 01: signed offset for or\n");
+        printf("%04x:", pc);
+        printf("TODO 01: signed\n");
         (a == 0) ? set(1) : clr(1);
         (a >> 7) ? set(7) : clr(7);
     }
@@ -768,7 +820,12 @@ class _2E : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 2E: don't understand shift docs\n");
+        temp = mem[one + (two << 8)] << 1;
+        (mem[one + (two << 8)] >> 7) ? set(0) : clr(0);
+        if (p & 0x1) temp |= 0x1;
+        (temp == 0) ? set(1) : clr(1);
+        (temp >> 7) ? set(7) : clr(7);
+        write(temp, one + (two << 8));
     }
 };
 
@@ -792,7 +849,8 @@ class _3E : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 3E: roll with value and flags\n");
+        printf("%04x:", pc);
+        printf("TODO 3E: signed\n");
     }
 };
 
@@ -800,7 +858,11 @@ class _0E : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 0E: ASL with values and flags\n");
+        temp = mem[one + (two << 8)] << 1;
+        (mem[one + (two << 8)] >> 7) ? set(0) : clr(0);
+        (temp == 0) ? set(1) : clr(1);
+        (temp >> 7) ? set(7) : clr(7);
+        write(temp, one + (two << 8));
     }
 };
 
@@ -808,7 +870,12 @@ class _2A : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 2A: implement ROL A with flags\n");
+        temp = a << 1;
+        (a >> 7) ? set(0) : clr(0);
+        if (p & 0x1) temp |= 0x1;
+        (temp == 0) ? set(1) : clr(1);
+        (temp >> 7) ? set(7) : clr(7);
+        a = temp;
     }
 };
 
@@ -816,6 +883,7 @@ class _40 : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
+        printf("%04x:", pc);
         printf("TODO 40: return from interrupt\n");
     }
 };
@@ -824,7 +892,8 @@ class _70 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 70: conditional jump\n");
+        printf("%04x:", pc);
+        printf("TODO 70: jump\n");
     }
 };
 
@@ -832,7 +901,8 @@ class _50 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 50: conditional jump\n");
+        printf("%04x:", pc);
+        printf("TODO 50: jump\n");
     }
 };
 
@@ -840,7 +910,8 @@ class _15 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 15: signed offsets\n");
+        printf("%04x:", pc);
+        printf("TODO 15: signed\n");
         (a == 0) ? set(1) : clr(1);
         (a >> 7) ? set(7) : clr(7);
     }
@@ -860,7 +931,9 @@ class _EE : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO EE: increment memory\n");
+        write(++mem[one + (two << 8)], one + (two << 8));
+        (mem[one + (two << 8)] == 0) ? set(1) : clr(1);
+        (mem[one + (two << 8)] >> 7) ? set(7) : clr(7);
     }
 };
 
@@ -878,7 +951,8 @@ class _6D : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 6d: adder with carry\n");
+        printf("%04x:", pc);
+        printf("TODO 6d: signed\n");
     }
 };
 
@@ -886,7 +960,8 @@ class _FE : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO FE: increment write to mem\n");
+        printf("%04x:", pc);
+        printf("TODO FE: signed\n");
     }
 };
 
@@ -894,7 +969,7 @@ class _8C : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 8C: store Y to mem\n");
+        write(y, one + (two << 8));
     }
 };
 
@@ -902,7 +977,8 @@ class _76 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 76: don't understand shift docs\n");
+        printf("%04x:", pc);
+        printf("TODO 76: signed\n");
     }
 };
 
@@ -910,7 +986,8 @@ class _36 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 36: don't understand shift docs\n");
+        printf("%04x:", pc);
+        printf("TODO 36: signed\n");
     }
 };
 

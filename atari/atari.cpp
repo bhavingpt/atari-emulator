@@ -5,8 +5,9 @@
 #include "instructions.h"
 
 uint16_t pc = 0x1000;
-uint8_t a, x, y, sp, p;
-char running = 1;
+uint8_t a, x, y, p;
+uint8_t sp = 0xFF;
+unsigned long long running = 1;
 
 void next_instruction() {
     try {
@@ -16,13 +17,14 @@ void next_instruction() {
         printf("\n%04x: UNKNOWN OPCODE %02x\n\n", pc - 0x1000, mem[pc]);
         running = 0;
     }
+    running++;
 }
 
 int main(int argc, char** argv) {
     initialize_instructions();
     setup(argv[1]);
 
-    while (running) {
+    while (running < 2050) {
         next_instruction();
     }
 }

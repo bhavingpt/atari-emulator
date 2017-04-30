@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unordered_map>
-#include <math.h>
-#include <string.h>
 #include "hashmap.h"
 #include "readnes.h"
 #include "instructions.h"
@@ -22,12 +20,10 @@ void next_instruction() {
 }
 
 int main(int argc, char** argv) {
-    init();
-    setup(argv[1]);
     initialize_instructions();
+    setup(argv[1]);
 
     while (running) {
         next_instruction();
     }
 }
-

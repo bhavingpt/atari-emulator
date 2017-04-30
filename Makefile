@@ -11,10 +11,12 @@ mario:
 	$(CC) $(CFLAGS) -o $(EXE) $(SRCS)
 	./nes mario.nes
 
-$(GAME):
+galaxian:
 	rm -rf core $(EXE) *.o *.d *.dSYM
 	$(CC) $(CFLAGS) -o $(EXE) $(SRCS)
-	./nes $(GAME).nes
+	./nes galaxian.nes
+
+all: mario galaxian
 
 clean:
 	rm -rf core $(EXE) *.o *.d *.dSYM

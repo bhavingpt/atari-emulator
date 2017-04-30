@@ -4,7 +4,7 @@
 #include "reada26.h"
 #include "instructions.h"
 
-uint16_t pc;
+uint16_t pc = 0x1000;
 uint8_t a, x, y, sp, p;
 char running = 1;
 

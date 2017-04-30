@@ -11,7 +11,7 @@ class _D8 : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
-        p &= 0xF7;
+        printf("TODO finish D8...\n");
     }
 };
 
@@ -19,7 +19,7 @@ class _78 : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
-        p &= 0xFB;
+        printf("TODO finish 78...\n");
     }
 };
 

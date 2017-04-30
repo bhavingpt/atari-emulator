@@ -2,11 +2,19 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-#include "hashmap.h"
-#include "readnes.h"
+#include "reada26.h"
 
-unsigned char *mem, *exe;
+unsigned char *exe, *mem;
 int size;
+
+void load_into_memory() {
+    mem = (unsigned char *) malloc(8192 * sizeof(char));
+
+    for (int i = 0; i < size; i++) {
+        mem[i + 4096] = exe[i];
+        if (size == 2048) mem[i + 6144] = exe[i];
+    }
+}
 
 void setup(char* filename) {
     FILE* fp = fopen(filename, "rb"); // file opening taken from my pc
@@ -16,6 +24,8 @@ void setup(char* filename) {
 
     exe = (unsigned char *) malloc(size * sizeof(char));
 
-    fread(mem, 1, size, fp); // read the file into temp
+    fread(exe, 1, size, fp); // read the file into temp
     fclose(fp);
+
+    load_into_memory();
 }

@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unordered_map>
-#include "hashmap.h"
-#include "readrom.h"
+#include "reada26.h"
 #include "instructions.h"
 
 uint16_t pc;
@@ -11,10 +10,10 @@ char running = 1;
 
 void next_instruction() {
     try {
-        table.at(prg[pc])->execute(prg[pc+1], prg[pc+2]);
-        pc += table.at(prg[pc])->length();
+        table.at(mem[pc])->execute(mem[pc+1], mem[pc+2]);
+        pc += table.at(mem[pc])->length();
     } catch (const std::out_of_range& oor) {
-        printf("UNKNOWN OPCODE %02x\n", prg[pc]);
+        printf("UNKNOWN OPCODE %02x\n", mem[pc]);
         running = 0;
     }
 }

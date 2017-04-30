@@ -1,0 +1,61 @@
+TODO:
+ADC - add to accumulator
+AND - logical and
+ASL - accumulator shift left
+BCC - branch on carry clear
+BCS - branch on carry set
+BEQ - branch on equal to 0
+BIT - set flags
+BMI - branch if negative flag
+BNE - branch if zero clear
+BPL - branch if negative clear
+BRK - force an interrupt
+BVS - branch if overflow set
+BVC - branch if overflow clear
+CLC - clear carry
+CLD - clear decimal mode
+CMP - compare accumulator
+CPX - compare x register
+CPY - compare y register
+DEX - decrement the x register
+DEY - decrement the y register
+EOR - exclusive or
+INX - increment x register
+INY - increment y register
+JMP - jump
+LDA - load accumulator
+LDX - load x register
+LDY - load y register
+LSR - logical shift right
+ORA - logical inclusive or
+PLA - pull accumulator
+PLP - pull processor
+ROL - rotate left
+ROR - rotate right
+RTI - return from interrupt
+RTS - return from subroutine
+SBC - subtract with carry
+SEC - set carry flag
+SED - set decimal flag
+SEI - set interrupt flag
+TAX - transfer accumulator to x
+TAY - transfer accumulator to y
+TXA - transfer x to accumulator
+TXS - transfer x to stack pointer
+TYA - transfer y to accumulator
+———————————————————
+
+Ignoring:
+DEC - decrement a memory location
+INC - increment memory location
+PHA - push accumulator
+PHP - push processor
+JSR - jump to subroutine
+STA - store accumulator
+STX - store x register
+STY - store y register
+———————————————————
+Completed:
+
+———————————————————
+

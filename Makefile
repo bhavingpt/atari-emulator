@@ -1,9 +1,9 @@
-CFLAGS = -ggdb3 -O0 -Wall -Werror
+CFLAGS = -ggdb3 -std=c++11 -O0 -Wall -Werror
 CC = g++
 
 EXE = nes
-SRCS = nes.cpp hashmap.cpp readnes.cpp
-HEAD = hashmap.h readnes.h
+SRCS = nes.cpp hashmap.cpp readnes.cpp instructions.cpp
+HEAD = hashmap.h readnes.h instructions.h
 GAME=$(wildcard *.nes)
 
 mario:

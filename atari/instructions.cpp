@@ -16,6 +16,11 @@ void clr(int idx) {
     p &= ~(1 << idx);
 }
 
+void flag(unsigned char value) {
+    (value == 0) ? set(1) : clr(1);
+    (value >> 7) ? set(7) : clr(7);
+}
+
 void write(unsigned char value, uint16_t location) {
     // TODO implement this (with mirroring);
     // TODO ALWAYS read from zero page if its zero paged
@@ -41,9 +46,7 @@ class _A2 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        x = one;
-        (x == 0) ? set(1) : clr(1);
-        (x >> 7) ? set(7) : clr(7);
+        flag(x = one);
     }
 };
 
@@ -59,9 +62,7 @@ class _E8 : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
-        x++;
-        (x == 0) ? set(1) : clr(1);
-        (x >> 7) ? set(7) : clr(7);
+        flag(++x);
     }
 };
 
@@ -69,9 +70,7 @@ class _8A : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
-        a = x;
-        (x == 0) ? set(1) : clr(1);
-        (x >> 7) ? set(7) : clr(7);
+        flag(a = x);
     }
 };
 
@@ -107,8 +106,7 @@ public:
     void execute (unsigned char one, unsigned char two) {
         printf("%04x:", pc);
         printf("TODO BD: signed offset\n");
-        (a == 0) ? set(1) : clr(1);
-        (a >> 7) ? set(7) : clr(7);
+        flag(a);
     }
 };
 
@@ -116,9 +114,7 @@ class _A0 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        y = one;
-        (y == 0) ? set(1) : clr(1);
-        (y >> 7) ? set(7) : clr(7);
+        flag(y = one);
     }
 };
 
@@ -135,9 +131,7 @@ class _C8 : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
-        y++;
-        (y == 0) ? set(1) : clr(1);
-        (y >> 7) ? set(7) : clr(7);
+        flag(++y);
     }
 };
 
@@ -145,9 +139,7 @@ class _CA : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
-        x--;
-        (x == 0) ? set(1) : clr(1);
-        (x >> 7) ? set(7) : clr(7);
+        flag(--x);
     }
 };
 
@@ -181,9 +173,7 @@ class _A9 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        a = one;
-        (y == 0) ? set(1) : clr(1);
-        (y >> 7) ? set(7) : clr(7);
+        flag(a = one);
     }
 };
 
@@ -208,8 +198,7 @@ public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
         write(++mem[one], one);
-        (mem[one] == 0) ? set(1) : clr(1);
-        (mem[one] >> 7) ? set(7) : clr(7);
+        flag(mem[one]);
     }
 };
 
@@ -217,9 +206,7 @@ class _A5 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        a = mem[one];
-        (a == 0) ? set(1) : clr(1);
-        (a >> 7) ? set(7) : clr(7);
+        flag(a = mem[one]);
     }
 };
 
@@ -228,8 +215,7 @@ public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
         write(--mem[one], one);
-        (mem[one] == 0) ? set(1) : clr(1);
-        (mem[one] >> 7) ? set(7) : clr(7);
+        flag(mem[one]);
     }
 };
 
@@ -237,9 +223,7 @@ class _29 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        a &= one;
-        (a == 0) ? set(1) : clr(1);
-        (a >> 7) ? set(7) : clr(7);
+        flag(a &= one);
     }
 };
 
@@ -247,9 +231,7 @@ class _AD : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        a = mem[one + (two << 8)];
-        (a == 0) ? set(1) : clr(1);
-        (a >> 7) ? set(7) : clr(7);
+        flag(a = mem[one + (two << 8)]);
     }
 };
 
@@ -257,9 +239,7 @@ class _A8 : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
-        y = a;
-        (y == 0) ? set(1) : clr(1);
-        (y >> 7) ? set(7) : clr(7);
+        flag(y = a);
     }
 };
 
@@ -267,9 +247,7 @@ class _45 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        a ^= mem[one];
-        (a == 0) ? set(1) : clr(1);
-        (a >> 7) ? set(7) : clr(7);
+        flag(a ^= mem[one]);
     }
 };
 
@@ -277,9 +255,7 @@ class _25 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        a &= mem[one];
-        (a == 0) ? set(1) : clr(1);
-        (a >> 7) ? set(7) : clr(7);
+        flag(a &= mem[one]);
     }
 };
 
@@ -287,9 +263,7 @@ class _09 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        a |= one;
-        (a == 0) ? set(1) : clr(1);
-        (a >> 7) ? set(7) : clr(7);
+        flag(a |= one);
     }
 };
 
@@ -298,9 +272,7 @@ public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
         (a >> 7) ? set(0) : clr(0);
-        a = a << 1;
-        (a == 0) ? set(1) : clr(1);
-        (a >> 7) ? set(7) : clr(7);
+        flag(a = a << 1);
     }
 };
 
@@ -311,8 +283,7 @@ public:
         temp = mem[one] << 1;
         (mem[one] >> 7) ? set(0) : clr(0);
         if (p & 0x1) temp |= 0x1;
-        (temp == 0) ? set(1) : clr(1);
-        (temp >> 7) ? set(7) : clr(7);
+        flag(temp);
         write(temp, one);
     }
 };
@@ -321,9 +292,7 @@ class _A6 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        x = mem[one];
-        (x == 0) ? set(1) : clr(1);
-        (x >> 7) ? set(7) : clr(7);
+        flag(x = mem[one]);
     }
 };
 
@@ -357,9 +326,7 @@ class _49 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        a ^= one;
-        (a == 0) ? set(1) : clr(1);
-        (a >> 7) ? set(7) : clr(7);
+        flag(a ^= one);
     }
 };
 
@@ -367,9 +334,7 @@ class _AA : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
-        x = a;
-        (x == 0) ? set(1) : clr(1);
-        (x >> 7) ? set(7) : clr(7);
+        flag(x = a);
     }
 };
 
@@ -377,9 +342,7 @@ class _05 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        a |= mem[one];
-        (a == 0) ? set(1) : clr(1);
-        (a >> 7) ? set(7) : clr(7);
+        flag(a |= mem[one]);
     }
 };
 
@@ -408,8 +371,7 @@ public:
     void execute (unsigned char one, unsigned char two) {
         printf("%04x:", pc);
         printf("TODO B5: signed\n");
-        (a == 0) ? set(1) : clr(1);
-        (a >> 7) ? set(7) : clr(7);
+        flag(a);
     }
 };
 
@@ -419,8 +381,7 @@ public:
     void execute (unsigned char one, unsigned char two) {
         printf("%04x:", pc);
         printf("TODO 39: signed\n");
-        (a == 0) ? set(1) : clr(1);
-        (a >> 7) ? set(7) : clr(7);
+        flag(a);
     }
 };
 
@@ -430,8 +391,7 @@ public:
     void execute (unsigned char one, unsigned char two) {
         printf("%04x:", pc);
         printf("TODO 55: signed\n");
-        (a == 0) ? set(1) : clr(1);
-        (a >> 7) ? set(7) : clr(7);
+        flag(a);
     }
 };
 
@@ -439,9 +399,7 @@ class _88 : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
-        y--;
-        (y == 0) ? set(1) : clr(1);
-        (y >> 7) ? set(7) : clr(7);
+        flag(--y);
     }
 };
 
@@ -463,8 +421,7 @@ public:
     void execute (unsigned char one, unsigned char two) {
         printf("%04x:", pc);
         printf("TODO 59: signed\n");
-        (a == 0) ? set(1) : clr(1);
-        (a >> 7) ? set(7) : clr(7);
+        flag(a);
     }
 };
 
@@ -493,8 +450,7 @@ public:
         (a & 0x1) ? set(0) : clr(0);
         a = a >> 1;
         (p & 0x1) ? (a |= 0x80) : (a &= 0x7F);
-        (a == 0) ? set(1) : clr(1);
-        (a >> 7) ? set(7) : clr(7);
+        flag(a);
     }
 };
 
@@ -523,8 +479,7 @@ public:
     void execute (unsigned char one, unsigned char two) {
         printf("%04x:", pc);
         printf("TODO B1: signed\n");
-        (a == 0) ? set(1) : clr(1);
-        (a >> 7) ? set(7) : clr(7);
+        flag(a);
     }
 };
 
@@ -534,8 +489,7 @@ public:
     void execute (unsigned char one, unsigned char two) {
         printf("%04x:", pc);
         printf("TODO 11: signed\n");
-        (a == 0) ? set(1) : clr(1);
-        (a >> 7) ? set(7) : clr(7);
+        flag(a);
     }
 };
 
@@ -578,8 +532,7 @@ public:
     void execute (unsigned char one, unsigned char two) {
         printf("%04x:", pc);
         printf("TODO 51: signed\n");
-        (a == 0) ? set(1) : clr(1);
-        (a >> 7) ? set(7) : clr(7);
+        flag(a);
     }
 };
 
@@ -589,8 +542,7 @@ public:
     void execute (unsigned char one, unsigned char two) {
         printf("%04x:", pc);
         printf("TODO B9: signed\n");
-        (a == 0) ? set(1) : clr(1);
-        (a >> 7) ? set(7) : clr(7);
+        flag(a);
     }
 };
 
@@ -636,8 +588,7 @@ public:
     void execute (unsigned char one, unsigned char two) {
         printf("%04x:", pc);
         printf("TODO 3D: signed\n");
-        (a == 0) ? set(1) : clr(1);
-        (a >> 7) ? set(7) : clr(7);
+        flag(a);
     }
 };
 
@@ -677,9 +628,7 @@ class _98 : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
-        a = y;
-        (a == 0) ? set(1) : clr(1);
-        (a >> 7) ? set(7) : clr(7);
+        flag(a = y);
     }
 };
 
@@ -689,8 +638,7 @@ public:
     void execute (unsigned char one, unsigned char two) {
         printf("%04x:", pc);
         printf("TODO B4: signed\n");
-        (y == 0) ? set(1) : clr(1);
-        (y >> 7) ? set(7) : clr(7);
+        flag(y);
     }
 };
 
@@ -707,9 +655,7 @@ class _A4 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        y = mem[one];
-        (y == 0) ? set(1) : clr(1);
-        (y >> 7) ? set(7) : clr(7);
+        flag(y = mem[one]);
     }
 };
 
@@ -719,8 +665,7 @@ public:
     void execute (unsigned char one, unsigned char two) {
         printf("%04x:", pc);
         printf("TODO BE: signed\n");
-        (x == 0) ? set(1) : clr(1);
-        (x >> 7) ? set(7) : clr(7);
+        flag(x);
     }
 };
 
@@ -791,8 +736,7 @@ public:
     void execute (unsigned char one, unsigned char two) {
         printf("%04x:", pc);
         printf("TODO 19: signed\n");
-        (a == 0) ? set(1) : clr(1);
-        (a >> 7) ? set(7) : clr(7);
+        flag(a);
     }
 };
 
@@ -811,8 +755,7 @@ public:
     void execute (unsigned char one, unsigned char two) {
         printf("%04x:", pc);
         printf("TODO 01: signed\n");
-        (a == 0) ? set(1) : clr(1);
-        (a >> 7) ? set(7) : clr(7);
+        flag(a);
     }
 };
 
@@ -823,8 +766,7 @@ public:
         temp = mem[one + (two << 8)] << 1;
         (mem[one + (two << 8)] >> 7) ? set(0) : clr(0);
         if (p & 0x1) temp |= 0x1;
-        (temp == 0) ? set(1) : clr(1);
-        (temp >> 7) ? set(7) : clr(7);
+        flag(temp);
         write(temp, one + (two << 8));
     }
 };
@@ -860,8 +802,7 @@ public:
     void execute (unsigned char one, unsigned char two) {
         temp = mem[one + (two << 8)] << 1;
         (mem[one + (two << 8)] >> 7) ? set(0) : clr(0);
-        (temp == 0) ? set(1) : clr(1);
-        (temp >> 7) ? set(7) : clr(7);
+        flag(temp);
         write(temp, one + (two << 8));
     }
 };
@@ -873,9 +814,7 @@ public:
         temp = a << 1;
         (a >> 7) ? set(0) : clr(0);
         if (p & 0x1) temp |= 0x1;
-        (temp == 0) ? set(1) : clr(1);
-        (temp >> 7) ? set(7) : clr(7);
-        a = temp;
+        flag(a = temp);
     }
 };
 
@@ -912,8 +851,7 @@ public:
     void execute (unsigned char one, unsigned char two) {
         printf("%04x:", pc);
         printf("TODO 15: signed\n");
-        (a == 0) ? set(1) : clr(1);
-        (a >> 7) ? set(7) : clr(7);
+        flag(a);
     }
 };
 
@@ -932,8 +870,7 @@ public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
         write(++mem[one + (two << 8)], one + (two << 8));
-        (mem[one + (two << 8)] == 0) ? set(1) : clr(1);
-        (mem[one + (two << 8)] >> 7) ? set(7) : clr(7);
+        flag(mem[one + (two << 8)]);
     }
 };
 
@@ -941,9 +878,7 @@ class _AE : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        x = mem[one + (two << 8)];
-        (x == 0) ? set(1) : clr(1);
-        (x >> 7) ? set(7) : clr(7);
+        flag(x = mem[one + (two << 8)]);
     }
 };
 

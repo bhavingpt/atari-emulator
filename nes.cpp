@@ -14,9 +14,9 @@ char running = 1;
 void next_instruction() {
     try {
         table.at(prg[pc])->execute(prg[pc+1], prg[pc+2]);
-        pc += 1;
+        pc += table.at(prg[pc])->length();
     } catch (const std::out_of_range& oor) {
-        printf("didn't recognize opcode %02x, exiting\n", prg[pc]);
+        printf("UNKNOWN OPCODE %02x\n", prg[pc]);
         running = 0;
     }
 }

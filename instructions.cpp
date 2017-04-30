@@ -8,6 +8,7 @@ unordered_map<unsigned char, Instruction*> table;
 
 class CLD : public Instruction {
 public:
+    int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
         printf("Executing CLD...\n");
     }

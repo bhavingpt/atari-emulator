@@ -78,8 +78,7 @@ class _95 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 95: write + signed\n");
+        printf("%04x:TODO 95: write + signed\n", pc);
     }
 };
 
@@ -87,8 +86,7 @@ class _D0 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO D0: jump + signed\n");
+        printf("%04x:TODO D0: jump + signed\n", pc);
     }
 };
 
@@ -104,8 +102,7 @@ class _BD : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO BD: signed offset\n");
+        printf("%04x:TODO BD: signed offset\n", pc);
         flag(a);
     }
 };
@@ -122,8 +119,7 @@ class _94 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 94: write + signed\n");
+        printf("%04x:TODO 94: write + signed\n", pc);
     }
 };
 
@@ -147,8 +143,7 @@ class _10 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 10: jump + signed\n");
+        printf("%04x:TODO 10: jump + signed\n", pc);
     }
 };
 
@@ -164,8 +159,7 @@ class _20 : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 20: stack and subroutine call\n");
+        printf("%04x:TODO 20: stack and subroutine call\n", pc);
     }
 };
 
@@ -300,8 +294,7 @@ class _F0 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO F0: signed jump\n");
+        printf("%04x:TODO F0: signed jump\n", pc);
     }
 };
 
@@ -317,8 +310,7 @@ class _69 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 69: signed\n");
+        printf("%04x:TODO 69: signed\n", pc);
     }
 };
 
@@ -360,8 +352,7 @@ class _B0 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO B0: signed jump\n");
+        printf("%04x:TODO B0: signed jump\n", pc);
     }
 };
 
@@ -369,8 +360,7 @@ class _B5 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO B5: signed\n");
+        printf("%04x:TODO B5: signed\n", pc);
         flag(a);
     }
 };
@@ -379,8 +369,7 @@ class _39 : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 39: signed\n");
+        printf("%04x:TODO 39: signed\n", pc);
         flag(a);
     }
 };
@@ -389,8 +378,7 @@ class _55 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 55: signed\n");
+        printf("%04x:TODO 55: signed\n", pc);
         flag(a);
     }
 };
@@ -419,8 +407,7 @@ class _59 : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 59: signed\n");
+        printf("%04x:TODO 59: signed\n", pc);
         flag(a);
     }
 };
@@ -429,8 +416,7 @@ class _4C : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 4C: jump\n");
+        printf("%04x:TODO 4C: jump\n", pc);
     }
 };
 
@@ -438,8 +424,7 @@ class _65 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 65: signed\n");
+        printf("%04x:TODO 65: signed\n", pc);
     }
 };
 
@@ -458,8 +443,7 @@ class _99 : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 99: signed\n");
+        printf("%04x:TODO 99: signed\n", pc);
     }
 };
 
@@ -477,8 +461,7 @@ class _B1 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO B1: signed\n");
+        printf("%04x:TODO B1: signed\n", pc);
         flag(a);
     }
 };
@@ -487,8 +470,7 @@ class _11 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 11: signed\n");
+        printf("%04x:TODO 11: signed\n", pc);
         flag(a);
     }
 };
@@ -505,8 +487,7 @@ class _90 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 90: jump\n");
+        printf("%04x:TODO 90: jump\n", pc);
     }
 };
 
@@ -522,7 +503,7 @@ class _60 : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO 60: jump\n");
+        printf("%04x:TODO 60: jump\n", pc);
     }
 };
 
@@ -530,8 +511,7 @@ class _51 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 51: signed\n");
+        printf("%04x:TODO 51: signed\n", pc);
         flag(a);
     }
 };
@@ -540,8 +520,7 @@ class _B9 : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO B9: signed\n");
+        printf("%04x:TODO B9: signed\n", pc);
         flag(a);
     }
 };
@@ -568,8 +547,7 @@ class _30 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 30: jump\n");
+        printf("%04x:TODO 30: jump\n", pc);
     }
 };
 
@@ -577,8 +555,7 @@ class _E9 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO E9: signed\n");
+        printf("%04x:TODO E9: signed\n", pc);
     }
 };
 
@@ -586,8 +563,7 @@ class _3D : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 3D: signed\n");
+        printf("%04x:TODO 3D: signed\n", pc);
         flag(a);
     }
 };
@@ -636,8 +612,7 @@ class _B4 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO B4: signed\n");
+        printf("%04x:TODO B4: signed\n", pc);
         flag(y);
     }
 };
@@ -646,8 +621,7 @@ class _D5 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO D5: signed\n");
+        printf("%04x:TODO D5: signed\n", pc);
     }
 };
 
@@ -663,8 +637,7 @@ class _BE : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO BE: signed\n");
+        printf("%04x:TODO BE: signed\n", pc);
         flag(x);
     }
 };
@@ -681,8 +654,7 @@ class _F5 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO F5: signed\n");
+        printf("%04x:TODO F5: signed\n", pc);
     }
 };
 
@@ -690,8 +662,7 @@ class _00 : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 00: break, flag and special behavior\n");
+        printf("%04x:TODO 00: break, flag and special behavior\n", pc);
     }
 };
 
@@ -699,8 +670,7 @@ class _75 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 75: signed\n");
+        printf("%04x:TODO 75: signed\n", pc);
     }
 };
 
@@ -734,8 +704,7 @@ class _19 : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 19: signed\n");
+        printf("%04x:TODO 19: signed\n", pc);
         flag(a);
     }
 };
@@ -744,8 +713,7 @@ class _1E : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 1E: signed\n");
+        printf("%04x:TODO 1E: signed\n", pc);
     }
 };
 
@@ -753,8 +721,7 @@ class _01 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 01: signed\n");
+        printf("%04x:TODO 01: signed\n", pc);
         flag(a);
     }
 };
@@ -791,8 +758,7 @@ class _3E : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 3E: signed\n");
+        printf("%04x:TODO 3E: signed\n", pc);
     }
 };
 
@@ -822,8 +788,7 @@ class _40 : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 40: return from interrupt\n");
+        printf("%04x:TODO 40: return from interrupt\n", pc);
     }
 };
 
@@ -831,8 +796,7 @@ class _70 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 70: jump\n");
+        printf("%04x:TODO 70: jump\n", pc);
     }
 };
 
@@ -840,8 +804,7 @@ class _50 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 50: jump\n");
+        printf("%04x:TODO 50: jump\n", pc);
     }
 };
 
@@ -849,8 +812,7 @@ class _15 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 15: signed\n");
+        printf("%04x:TODO 15: signed\n", pc);
         flag(a);
     }
 };
@@ -886,8 +848,7 @@ class _6D : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 6d: signed\n");
+        printf("%04x:TODO 6d: signed\n", pc);
     }
 };
 
@@ -895,8 +856,7 @@ class _FE : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO FE: signed\n");
+        printf("%04x:TODO FE: signed\n", pc);
     }
 };
 
@@ -912,8 +872,7 @@ class _76 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 76: signed\n");
+        printf("%04x:TODO 76: signed\n", pc);
     }
 };
 
@@ -921,8 +880,7 @@ class _36 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:", pc);
-        printf("TODO 36: signed\n");
+        printf("%04x:TODO 36: signed\n", pc);
     }
 };
 

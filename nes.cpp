@@ -8,34 +8,34 @@
 
 uint16_t pc;
 uint8_t a, x, y, sp, p;
-std::unordered_map<unsigned char, Instruction> table;
+char running = 1;
 
 class Instruction {
+  public:
+    int length;
+    void execute(unsigned char one, unsigned char two) {}
+};
 
-}
+Instruction inst;
+std::unordered_map<unsigned char, Instruction> table;
 
-
-int get_inst_len(unsigned char opcode) {
-
-}
-
-void get_next_instruction() {
-    int currlen = get_inst_len(prg[pc]);
-
-    for (int i=0;i < currlen; i++) {
-        printf("%02x ", prg[pc + i]);
+void next_instruction() {
+    try {
+        inst = table.at(prg[pc]);
+        inst.execute(prg[pc + 1], prg[pc + 2]);
+        pc += inst.length;
+    } catch (const std::out_of_range& oor) {
+        printf("didn't recognize opcode %02x, exiting\n", prg[pc]);
+        running = 0;
     }
-
-    printf("\n");
-    pc += currlen;
 }
 
 int main(int argc, char** argv) {
     init();
     setup(argv[1]);
 
-    while (pc < 50 /*exe[4] * 16384*/) {
-        get_next_instruction();
+    while (running) {
+        next_instruction();
     }
 }
 

@@ -13,7 +13,7 @@ void next_instruction() {
         table.at(mem[pc])->execute(mem[pc+1], mem[pc+2]);
         pc += table.at(mem[pc])->length();
     } catch (const std::out_of_range& oor) {
-        printf("\nUNKNOWN OPCODE %02x\n\n", mem[pc]);
+        printf("\n%04x: UNKNOWN OPCODE %02x\n\n", pc - 0x1000, mem[pc]);
         running = 0;
     }
 }

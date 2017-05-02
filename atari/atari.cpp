@@ -15,7 +15,7 @@ void next_instruction() {
         table.at(mem(pc))->execute(mem(pc+1), mem(pc+2));
         pc += inst_length;
     } catch (const std::out_of_range& oor) {
-        printf("\n%04x: UNKNOWN OPCODE %02x\n\n", pc - 0x1000, mem(pc));
+        printf("\n%x: UNKNOWN OPCODE %02x\n\n", pc - 0x1000, mem(pc));
         running = 0;
     }
     running++;

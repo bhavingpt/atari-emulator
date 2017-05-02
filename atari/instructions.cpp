@@ -7,10 +7,10 @@ using namespace std;
 
 unordered_map<unsigned char, Instruction*> table;
 unsigned char temp;
-unsigned char jumps;
+unsigned char jumps = 1;
 
-// TODO check decimal mode when reading
-// TODO 1) implement add and subtract
+// TODO 0) implement decimal adds and subs
+// TODO 1) test all instructions
 // TODO 2) implement a read memory mirror
 // TODO 3) implement a write memory mirror
 // TODO 4) enable jumps and debug result
@@ -332,7 +332,19 @@ class _69 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:TODO 69: add\n", pc);
+        if ((p & 0x8) == 0x8) { // binary mode
+            uint16_t result = a + (p & 0x1) + one;
+            (result == 0) ? set(1) : clr(1); // zero flag
+            ((result & 0x100) == 0x100) ? set(0) : clr(0); // carry flag
+            ((result & 0x80) == 0x80) ? set(7) : clr(7); // negative flag
+            ( ( (a >> 7) && (one >> 7) && ((result & 0x80) == 0x0)  ) || // neg + neg = pos
+              ( ((a >> 7) == 0) && ((one >> 7) == 0) && ((result & 0x80) == 0) ) ) ? // pos + pos = neg
+                set(6) : clr(6); // overflow flag
+            a = result & 0xFF; // set accumulator
+        } else {
+            printf("you need decimal mode!\n");
+            exit(1);
+        }
     }
 };
 
@@ -446,7 +458,19 @@ class _65 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:TODO 65: add\n", pc);
+        if ((p & 0x8) == 0x8) { // binary mode
+            uint16_t result = a + (p & 0x1) + mem(one);
+            (result == 0) ? set(1) : clr(1); // zero flag
+            ((result & 0x100) == 0x100) ? set(0) : clr(0); // carry flag
+            ((result & 0x80) == 0x80) ? set(7) : clr(7); // negative flag
+            ( ( (a >> 7) && (mem(one) >> 7) && ((result & 0x80) == 0x0)  ) || // neg + neg = pos
+              ( ((a >> 7) == 0) && ((mem(one) >> 7) == 0) && ((result & 0x80) == 0) ) ) ? // pos + pos = neg
+                set(6) : clr(6); // overflow flag
+            a = result & 0xFF; // set accumulator
+        } else {
+            printf("you need decimal mode!\n");
+            exit(1);
+        }
     }
 };
 
@@ -483,9 +507,7 @@ class _B1 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        flag(a = mem( (
-                     mem(one) + (mem(one + 1) << 8) + y
-                       )));
+        flag(a = mem( (mem(one) + (mem(one + 1) << 8) + y)));
     }
 };
 
@@ -493,9 +515,7 @@ class _11 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        flag(a |= mem( (
-                        mem(one) + (mem(one + 1) << 8) + y
-                        )));
+        flag(a |= mem( (mem(one) + (mem(one + 1) << 8) + y)));
     }
 };
 
@@ -540,9 +560,7 @@ class _51 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        flag(a ^= mem( (
-                      mem(one) + (mem(one + 1) << 8) + y
-                        )));
+        flag(a ^= mem( (mem(one) + (mem(one + 1) << 8) + y)));
     }
 };
 
@@ -586,7 +604,20 @@ class _E9 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:TODO E9: sub\n", pc);
+        temp = ~one;
+        if ((p & 0x8) == 0x8) { // binary mode
+            uint16_t result = a - ~(p & 0x1) + temp;
+            (result == 0) ? set(1) : clr(1); // zero flag
+            ( a >= one ) ? set(0) : clr(0); // carry flag
+            ((result & 0x80) == 0x80) ? set(7) : clr(7); // negative flag
+            ( ( ((a >> 7) == 0) && (temp >> 7) && ((result & 0x80) == 0x0)  ) || // pos - neg = neg
+              ( (a >> 7) && ((temp >> 7) == 0) && ((result & 0x80) == 0) ) ) ? // neg - pos = pos
+                set(6) : clr(6); // overflow flag
+            a = result & 0xFF; // set accumulator
+        } else {
+            printf("you need decimal mode!\n");
+            exit(1);
+        }
     }
 };
 
@@ -684,7 +715,20 @@ class _F5 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:TODO F5: sub\n", pc);
+        temp = ~(mem((one + x) & 0xFF));
+        if ((p & 0x8) == 0x8) { // binary mode
+            uint16_t result = a - ~(p & 0x1) + temp;
+            (result == 0) ? set(1) : clr(1); // zero flag
+            ( a >= ~temp ) ? set(0) : clr(0); // carry flag
+            ((result & 0x80) == 0x80) ? set(7) : clr(7); // negative flag
+            ( ( ((a >> 7) == 0) && (temp >> 7) && ((result & 0x80) == 0x0)  ) || // pos - neg = neg
+              ( (a >> 7) && ((temp >> 7) == 0) && ((result & 0x80) == 0) ) ) ? // neg - pos = pos
+                set(6) : clr(6); // overflow flag
+            a = result & 0xFF; // set accumulator
+        } else {
+            printf("you need decimal mode!\n");
+            exit(1);
+        }
     }
 };
 
@@ -707,7 +751,20 @@ class _75 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:TODO 75: add\n", pc);
+        temp = mem((one + x) & 0xFF);
+        if ((p & 0x8) == 0x8) { // binary mode
+            uint16_t result = a + (p & 0x1) + temp;
+            (result == 0) ? set(1) : clr(1); // zero flag
+            ((result & 0x100) == 0x100) ? set(0) : clr(0); // carry flag
+            ((result & 0x80) == 0x80) ? set(7) : clr(7); // negative flag
+            ( ( (a >> 7) && (temp >> 7) && ((result & 0x80) == 0x0)  ) || // neg + neg = pos
+              ( ((a >> 7) == 0) && ((temp >> 7) == 0) && ((result & 0x80) == 0) ) ) ? // pos + pos = neg
+                set(6) : clr(6); // overflow flag
+            a = result & 0xFF; // set accumulator
+        } else {
+            printf("you need decimal mode!\n");
+            exit(1);
+        }
     }
 };
 
@@ -760,9 +817,7 @@ class _01 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        flag(a |= mem( (
-                      mem((one + x) & 0xFF) + (mem((one + x + 1) & 0xFF) << 8)
-                        )));
+        flag(a |= mem( (mem((one + x) & 0xFF) + (mem((one + x + 1) & 0xFF) << 8))));
     }
 };
 
@@ -900,7 +955,20 @@ class _6D : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:TODO 6d: add\n", pc);
+        temp = mem(one + (two << 8));
+        if ((p & 0x8) == 0x8) { // binary mode
+            uint16_t result = a + (p & 0x1) + temp;
+            (result == 0) ? set(1) : clr(1); // zero flag
+            ((result & 0x100) == 0x100) ? set(0) : clr(0); // carry flag
+            ((result & 0x80) == 0x80) ? set(7) : clr(7); // negative flag
+            ( ( (a >> 7) && (temp >> 7) && ((result & 0x80) == 0x0)  ) || // neg + neg = pos
+              ( ((a >> 7) == 0) && ((temp >> 7) == 0) && ((result & 0x80) == 0) ) ) ? // pos + pos = neg
+                set(6) : clr(6); // overflow flag
+            a = result & 0xFF; // set accumulator
+        } else {
+            printf("you need decimal mode!\n");
+            exit(1);
+        }
     }
 };
 
@@ -950,7 +1018,6 @@ public:
 
 void initialize_instructions() {
     printf("\n");
-    // jumps = 1;
     table.insert(pair<unsigned char, Instruction*>('\x36', new _36()));
     table.insert(pair<unsigned char, Instruction*>('\x76', new _76()));
     table.insert(pair<unsigned char, Instruction*>('\x8c', new _8C()));

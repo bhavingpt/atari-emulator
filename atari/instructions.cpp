@@ -25,6 +25,7 @@ void flag(unsigned char value) {
 void write(unsigned char value, uint16_t location) {
     // TODO implement this (with mirroring);
     // TODO check decimal mode when reading
+    // TODO reading from memory is screwed up rn
     // TODO enable jumps
     // TODO compare may be similar to subtract
 }
@@ -107,7 +108,7 @@ class _BD : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        flag(a = mem[(one + (two << 8)) + x]);
+        flag(a = mem[((one + (two << 8)) + x) & 0x1FFF]);
     }
 };
 
@@ -165,7 +166,12 @@ class _20 : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:TODO 20: subroutine call\n", pc);
+        if (jumps) {
+            write(((pc + 2) >> 8) & 0xFF, sp - 1);
+            write((pc + 2) & 0xFF, sp - 2);
+            sp -= 2;
+            pc = (one + (two << 8)) - 3;
+        }
     }
 };
 
@@ -189,7 +195,7 @@ class _8E : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        write(x, one + (two << 8));
+        write(x, (one + (two << 8)) & 0x1FFF);
     }
 };
 
@@ -231,7 +237,7 @@ class _AD : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        flag(a = mem[one + (two << 8)]);
+        flag(a = mem[(one + (two << 8)) & 0x1FFF]);
     }
 };
 
@@ -318,7 +324,7 @@ class _69 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:TODO 69: add inst\n", pc);
+        printf("%04x:TODO 69: add\n", pc);
     }
 };
 
@@ -378,7 +384,7 @@ class _39 : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        flag(a &= mem[(one + (two << 8)) + y]);
+        flag(a &= mem[((one + (two << 8)) + y) & 0x1FFF]);
     }
 };
 
@@ -414,7 +420,7 @@ class _59 : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        flag(a ^= mem[(one + (two << 8)) + y]);
+        flag(a ^= mem[((one + (two << 8)) + y) & 0x1FFF]);
     }
 };
 
@@ -432,7 +438,7 @@ class _65 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:TODO 65: add instruction\n", pc);
+        printf("%04x:TODO 65: add\n", pc);
     }
 };
 
@@ -451,7 +457,7 @@ class _99 : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        write(a, (one + (two << 8)) + y);
+        write(a, ((one + (two << 8)) + y) & 0x1FFF);
     }
 };
 
@@ -469,7 +475,9 @@ class _B1 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        flag(a = mem[(mem[one] + (mem[one + 1] << 8)) + y]);
+        flag(a = mem[ (
+                     mem[one] + (mem[one + 1] << 8) + y
+                       ) & 0x1FFF ]);
     }
 };
 
@@ -477,7 +485,9 @@ class _11 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        flag(a |= mem[(mem[one] + (mem[one + 1] << 8)) + y]);
+        flag(a |= mem[ (
+                        mem[one] + (mem[one + 1] << 8) + y
+                        ) & 0x1FFF ]);
     }
 };
 
@@ -511,7 +521,10 @@ class _60 : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:TODO 60: return subroutine\n", pc);
+        if (jumps) {
+            pc = mem[sp + 1] + (mem[sp + 2] << 8);
+            sp += 2;
+        }
     }
 };
 
@@ -519,7 +532,9 @@ class _51 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        flag(a ^= mem[(mem[one] + (mem[one + 1] << 8)) + y]);
+        flag(a ^= mem[ (
+                      mem[one] + (mem[one + 1] << 8) + y
+                        ) & 0x1FFF ]);
     }
 };
 
@@ -527,7 +542,7 @@ class _B9 : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        flag(a = mem[(one + (two << 8)) + y]);
+        flag(a = mem[((one + (two << 8)) + y) & 0x1FFF]);
     }
 };
 
@@ -563,7 +578,7 @@ class _E9 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:TODO E9: subtract instruction\n", pc);
+        printf("%04x:TODO E9: sub\n", pc);
     }
 };
 
@@ -571,7 +586,7 @@ class _3D : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        flag(a &= mem[(one + (two << 8)) + x]);
+        flag(a &= mem[(one + (two << 8) + x) & 0x1FFF]);
     }
 };
 
@@ -645,7 +660,7 @@ class _BE : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        flag(x = mem[(one + (two << 8)) + y]);
+        flag(x = mem[(one + (two << 8) + y) & 0x1FFF]);
     }
 };
 
@@ -661,7 +676,7 @@ class _F5 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:TODO F5: subtract\n", pc);
+        printf("%04x:TODO F5: sub\n", pc);
     }
 };
 
@@ -669,7 +684,14 @@ class _00 : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:TODO 00: break, flag and special behavior\n", pc);
+        if (jumps) {
+            write(((pc + 2) >> 8) & 0xFF, sp);
+            write((pc + 2) & 0xFF, sp - 1);
+            write(p | 0x10, sp - 2);
+            sp -= 3;
+
+            pc = mem[0x1FFE] + (mem[0x1FFF] << 8) - 1;
+        }
     }
 };
 
@@ -711,7 +733,7 @@ class _19 : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        flag(a |= mem[(one + (two << 8)) + y]);
+        flag(a |= mem[(one + (two << 8) + y) & 0x1FFF]);
     }
 };
 
@@ -719,10 +741,10 @@ class _1E : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        temp = mem[one + (two << 8) + x] << 1;
-        (mem[one + (two << 8) + x] >> 7) ? set(0) : clr(0);
+        temp = mem[(one + (two << 8) + x) & 0x1FFF] << 1;
+        (mem[(one + (two << 8) + x) & 0x1FFF] >> 7) ? set(0) : clr(0);
         flag(temp);
-        write(temp, one + (two << 8) + x);
+        write(temp, (one + (two << 8) + x) & 0x1FFF);
     }
 };
 
@@ -730,7 +752,9 @@ class _01 : public Instruction {
 public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
-        flag(a |= mem[ mem[(one + x) & 0xFF] + (mem[(one + x + 1) & 0xFF] << 8) ]);
+        flag(a |= mem[ (
+                      mem[(one + x) & 0xFF] + (mem[(one + x + 1) & 0xFF] << 8)
+                        ) & 0x1FFF ]);
     }
 };
 
@@ -738,11 +762,11 @@ class _2E : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        temp = mem[one + (two << 8)] << 1;
-        (mem[one + (two << 8)] >> 7) ? set(0) : clr(0);
+        temp = mem[(one + (two << 8)) & 0x1FFF] << 1;
+        (mem[(one + (two << 8)) & 0x1FFF] >> 7) ? set(0) : clr(0);
         if (p & 0x1) temp |= 0x1;
         flag(temp);
-        write(temp, one + (two << 8));
+        write(temp, (one + (two << 8)) & 0x1FFF);
     }
 };
 
@@ -750,9 +774,9 @@ class _2C : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        ((a & mem[one + (two << 8)]) == 0) ? set(1) : clr(1);
-        (mem[one + (two << 8)] >> 7) ? set(7) : clr(7);
-        (mem[one + (two << 8)] & 0x40) ? set(6) : clr(6);
+        ((a & mem[(one + (two << 8)) & 0x1FFF]) == 0) ? set(1) : clr(1);
+        (mem[(one + (two << 8)) & 0x1FFF] >> 7) ? set(7) : clr(7);
+        (mem[(one + (two << 8)) & 0x1FFF] & 0x40) ? set(6) : clr(6);
     }
 };
 
@@ -766,7 +790,7 @@ class _3E : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        uint16_t addr = one + x + (two << 8);
+        uint16_t addr = (one + x + (two << 8)) & 0x1FFF;
         temp = mem[addr] << 1;
         (mem[addr] >> 7) ? set(0) : clr(0);
         if (p & 0x1) temp |= 0x1;
@@ -779,10 +803,10 @@ class _0E : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        temp = mem[one + (two << 8)] << 1;
-        (mem[one + (two << 8)] >> 7) ? set(0) : clr(0);
+        temp = mem[(one + (two << 8)) & 0x1FFF] << 1;
+        (mem[(one + (two << 8)) & 0x1FFF] >> 7) ? set(0) : clr(0);
         flag(temp);
-        write(temp, one + (two << 8));
+        write(temp, (one + (two << 8)) & 0x1FFF);
     }
 };
 
@@ -801,7 +825,11 @@ class _40 : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
-        printf("%04x:TODO 40: return\n", pc);
+        if (jumps) {
+            p = mem[sp + 1];
+            pc = mem[sp + 2] + (mem[sp + 3] << 8) - 1;
+            sp += 3;
+        }
     }
 };
 
@@ -847,8 +875,8 @@ class _EE : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        write(++mem[one + (two << 8)], one + (two << 8));
-        flag(mem[one + (two << 8)]);
+        write(++mem[one + (two << 8)], (one + (two << 8)) & 0x1FFF);
+        flag(mem[(one + (two << 8)) & 0x1FFF]);
     }
 };
 
@@ -856,7 +884,7 @@ class _AE : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        flag(x = mem[one + (two << 8)]);
+        flag(x = mem[(one + (two << 8)) & 0x1FFF]);
     }
 };
 
@@ -872,8 +900,9 @@ class _FE : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        write(++mem[(one + (two << 8)) + x], (one + (two << 8)) + x);
-        flag(mem[(one + (two << 8)) + x]);
+        unsigned char temp_two = ((one + (two << 8)) + x) & 0x1FFF;
+        write(++mem[temp_two], temp_two);
+        flag(mem[temp_two]);
     }
 };
 
@@ -881,7 +910,7 @@ class _8C : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        write(y, one + (two << 8));
+        write(y, (one + (two << 8)) & 0x1FFF);
     }
 };
 

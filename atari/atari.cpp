@@ -11,8 +11,9 @@ unsigned long long running = 1;
 
 void next_instruction() {
     try {
+        int inst_length = table.at(mem[pc])->length();
         table.at(mem[pc])->execute(mem[pc+1], mem[pc+2]);
-        pc += table.at(mem[pc])->length();
+        pc += inst_length;
     } catch (const std::out_of_range& oor) {
         printf("\n%04x: UNKNOWN OPCODE %02x\n\n", pc - 0x1000, mem[pc]);
         running = 0;

@@ -11,9 +11,7 @@ unsigned char jumps = 1;
 
 // TODO 0) implement decimal adds and subs
 // TODO 1) test all instructions
-// TODO 2) implement a read memory mirror
-// TODO 3) implement a write memory mirror
-// TODO 4) enable jumps and debug result
+// TODO 2) enable jumps and debug result
 
 void set(int idx) {
     p |= (1 << idx);
@@ -28,14 +26,28 @@ void flag(unsigned char value) {
     (value >> 7) ? set(7) : clr(7);
 }
 
-void write(unsigned char value, uint16_t location) {
+uint16_t mirror (uint16_t location) {
     location &= 0x1FFF;
-    memory[location] = value;
+    if (!(location >> 11)) { // A12 is 0
+        if ((location & 0x80) == 0) { // A7 is 0
+            location &= 0x7F;
+        } else {
+            if ((location & 0x200) == 0x200) { // A9 is 1
+                location &= 0x2FF;
+            } else { // A9 is 0
+                location &= 0xFF;
+            }
+        }
+    }
+    return location;
+}
+
+void write(unsigned char value, uint16_t location) {
+    memory[mirror(location)] = value;
 }
 
 unsigned char mem(uint16_t location) {
-    location &= 0x1FFF;
-    return memory[location];
+    return memory[mirror(location)];
 }
 
 class _78 : public Instruction {

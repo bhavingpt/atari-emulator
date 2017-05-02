@@ -9,6 +9,12 @@ unordered_map<unsigned char, Instruction*> table;
 unsigned char temp;
 unsigned char jumps;
 
+// TODO implement this (with mirroring);
+// TODO check decimal mode when reading
+// TODO implement a memory mirror and delete bitwise cancer
+// TODO enable jumps
+// TODO compare may be similar to subtract
+
 void set(int idx) {
     p |= (1 << idx);
 }
@@ -23,11 +29,11 @@ void flag(unsigned char value) {
 }
 
 void write(unsigned char value, uint16_t location) {
-    // TODO implement this (with mirroring);
-    // TODO check decimal mode when reading
-    // TODO reading from memory is screwed up rn
-    // TODO enable jumps
-    // TODO compare may be similar to subtract
+
+}
+
+unsigned char read(uint16_t location) {
+    return 0;
 }
 
 class _78 : public Instruction {

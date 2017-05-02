@@ -4,15 +4,15 @@
 #include <string.h>
 #include "reada26.h"
 
-unsigned char *exe, *mem;
+unsigned char *exe, *memory;
 int size;
 
 void load_into_memory() {
-    mem = (unsigned char *) malloc(8192 * sizeof(char));
+    memory = (unsigned char *) malloc(8192 * sizeof(char));
 
     for (int i = 0; i < size; i++) {
-        mem[i + 4096] = exe[i];
-        if (size == 2048) mem[i + 6144] = exe[i];
+        memory[i + 4096] = exe[i];
+        if (size == 2048) memory[i + 6144] = exe[i];
     }
 }
 

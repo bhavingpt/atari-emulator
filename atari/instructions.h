@@ -13,5 +13,6 @@ extern uint8_t a, x, y, sp, p;
 extern unsigned long long running;
 
 void initialize_instructions();
+unsigned char mem(uint16_t location);
 
 #endif

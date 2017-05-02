@@ -1,7 +1,7 @@
 #ifndef READROM_H
 #define READROM_H
 
-extern unsigned char *mem;
+extern unsigned char *memory;
 
 void setup(char* filename);
 

@@ -10,8 +10,7 @@ unsigned char temp;
 unsigned char jumps = 1;
 
 // TODO 0) implement decimal adds and subs
-// TODO 1) test all instructions
-// TODO 2) enable jumps and debug result
+// TODO 1) test all instructions and debug result
 
 void set(int idx) {
     p |= (1 << idx);
@@ -33,7 +32,10 @@ uint16_t mirror (uint16_t location) {
             location &= 0x7F;
         } else {
             if ((location & 0x200) == 0x200) { // A9 is 1
-                location &= 0x2FF;
+                location &= 0x287;
+                if ((location & 0x4) == 0x4) { // fourth mirror
+                    location &= 0x285;
+                }
             } else { // A9 is 0
                 location &= 0xFF;
             }

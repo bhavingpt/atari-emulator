@@ -1030,7 +1030,16 @@ public:
     }
 };
 
+class _2D : public Instruction {
+public:
+    int length () { return 3; }
+    void execute (unsigned char one, unsigned char two) {
+        printf("TODO: 2D\n");
+    }
+};
+
 void initialize_instructions() {
+    table.insert(pair<unsigned char, Instruction*>('\x2D', new _2D()));
     table.insert(pair<unsigned char, Instruction*>('\x36', new _36()));
     table.insert(pair<unsigned char, Instruction*>('\x76', new _76()));
     table.insert(pair<unsigned char, Instruction*>('\x8c', new _8C()));

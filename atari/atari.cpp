@@ -9,16 +9,21 @@
 uint16_t pc = 0x1000;
 uint8_t a, x, y, p;
 uint8_t sp = 0xFF;
+int junk_cycles = 0;
 
 void compute_cycle() {
-    try {
-        // TODO all instructions currently take one cycle
-        int inst_length = table.at(mem(pc))->length();
-        table.at(mem(pc))->execute(mem(pc+1), mem(pc+2));
-        pc += inst_length;
-    } catch (const std::out_of_range& oor) {
-        printf("\n%x: UNKNOWN OPCODE %02x\n\n", pc - 0x1000, mem(pc));
-        exit(1);
+    if (junk_cycles == 0) {
+        try {
+            int inst_length = table.at(mem(pc))->length();
+            table.at(mem(pc))->execute(mem(pc+1), mem(pc+2));
+            pc += inst_length;
+            junk_cycles = 2; // = table.at(mem(pc))->cycles() - 1; // TODO do these
+        } catch (const std::out_of_range& oor) {
+            printf("\n%x: UNKNOWN OPCODE %02x\n\n", pc - 0x1000, mem(pc));
+            exit(1);
+        }
+    } else {
+        junk_cycles--;
     }
 }
 

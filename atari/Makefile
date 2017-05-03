@@ -2,8 +2,8 @@ CFLAGS = -ggdb3 -std=c++11 -O0 -Wall -Werror `/Users/Bhavin/Desktop/SDL2-2.0.5/s
 CC = g++
 
 EXE = atari
-SRCS = atari.cpp reada26.cpp instructions.cpp
-HEAD = reada26.h instructions.h
+SRCS = atari.cpp reada26.cpp instructions.cpp tia.cpp
+HEAD = reada26.h instructions.h tia.h
 GAME=$(wildcard *.nes)
 
 atari:

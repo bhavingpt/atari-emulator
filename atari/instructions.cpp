@@ -8,9 +8,10 @@ using namespace std;
 unordered_map<unsigned char, Instruction*> table;
 unsigned char temp;
 unsigned char jumps = 1;
+int extra, extra_two;
+uint16_t sum;
 
 // TODO 0) implement decimal adds and subs
-// TODO 1) test all instructions and debug result
 
 void set(int idx) {
     p |= (1 << idx);
@@ -58,6 +59,9 @@ public:
     void execute (unsigned char one, unsigned char two) {
         set(2);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
+    }
 };
 
 class _D8 : public Instruction {
@@ -65,6 +69,9 @@ public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
         set(3);
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
     }
 };
 
@@ -74,6 +81,9 @@ public:
     void execute (unsigned char one, unsigned char two) {
         flag(x = one);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
+    }
 };
 
 class _9A : public Instruction {
@@ -81,6 +91,9 @@ public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
         sp = x;
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
     }
 };
 
@@ -90,6 +103,9 @@ public:
     void execute (unsigned char one, unsigned char two) {
         flag(++x);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
+    }
 };
 
 class _8A : public Instruction {
@@ -98,6 +114,9 @@ public:
     void execute (unsigned char one, unsigned char two) {
         flag(a = x);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
+    }
 };
 
 class _95 : public Instruction {
@@ -105,6 +124,9 @@ public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
         write(a, (one + x) & 0xFF);
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 4;
     }
 };
 
@@ -116,6 +138,11 @@ public:
             pc += (char) one;
         }
     }
+    int cycles(unsigned char one, unsigned char two) {
+        extra = ((p & 0x2) == 0) ? 1 : 0;
+        extra_two = ((pc + (char)one) >> 8 != pc >> 8) ? 1 : 0;
+        return 2 + extra_two + extra;
+    }
 };
 
 class _86 : public Instruction {
@@ -123,6 +150,9 @@ public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
         write(x, one);
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 3;
     }
 };
 
@@ -132,6 +162,11 @@ public:
     void execute (unsigned char one, unsigned char two) {
         flag(a = mem(((one + (two << 8)) + x)));
     }
+    int cycles(unsigned char one, unsigned char two) {
+        sum = x + one;
+        extra = (sum >> 8) ? 1 : 0;
+        return 4 + extra;
+    }
 };
 
 class _A0 : public Instruction {
@@ -139,6 +174,9 @@ public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
         flag(y = one);
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
     }
 };
 
@@ -148,6 +186,9 @@ public:
     void execute (unsigned char one, unsigned char two) {
         write(y, (one + x) & 0xFF);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 4;
+    }
 };
 
 class _C8 : public Instruction {
@@ -156,6 +197,9 @@ public:
     void execute (unsigned char one, unsigned char two) {
         flag(++y);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
+    }
 };
 
 class _CA : public Instruction {
@@ -163,6 +207,9 @@ public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
         flag(--x);
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
     }
 };
 
@@ -174,6 +221,11 @@ public:
             pc += (char) one;
         }
     }
+    int cycles(unsigned char one, unsigned char two) {
+        extra = ((p & 0x80) == 0) ? 1 : 0;
+        extra_two = ((pc + (char)one) >> 8 != pc >> 8) ? 1 : 0;
+        return 2 + extra_two + extra;
+    }
 };
 
 class _84 : public Instruction {
@@ -181,6 +233,9 @@ public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
         write(y, one);
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 3;
     }
 };
 
@@ -195,6 +250,9 @@ public:
             pc = (one + (two << 8)) - 3;
         }
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 6;
+    }
 };
 
 class _A9 : public Instruction {
@@ -202,6 +260,9 @@ public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
         flag(a = one);
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
     }
 };
 
@@ -211,6 +272,9 @@ public:
     void execute (unsigned char one, unsigned char two) {
         write(a, one);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 3;
+    }
 };
 
 class _8E : public Instruction {
@@ -218,6 +282,9 @@ public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
         write(x, (one + (two << 8)));
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 4;
     }
 };
 
@@ -228,6 +295,9 @@ public:
         write(mem(one) + 1, one);
         flag(mem(one));
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 5;
+    }
 };
 
 class _A5 : public Instruction {
@@ -235,6 +305,9 @@ public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
         flag(a = mem(one));
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 3;
     }
 };
 
@@ -245,6 +318,9 @@ public:
         write(mem(one) - 1, one);
         flag(mem(one));
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 5;
+    }
 };
 
 class _29 : public Instruction {
@@ -252,6 +328,9 @@ public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
         flag(a &= one);
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
     }
 };
 
@@ -261,6 +340,9 @@ public:
     void execute (unsigned char one, unsigned char two) {
         flag(a = mem((one + (two << 8))));
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 4;
+    }
 };
 
 class _A8 : public Instruction {
@@ -268,6 +350,9 @@ public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
         flag(y = a);
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
     }
 };
 
@@ -277,6 +362,9 @@ public:
     void execute (unsigned char one, unsigned char two) {
         flag(a ^= mem(one));
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 3;
+    }
 };
 
 class _25 : public Instruction {
@@ -284,6 +372,9 @@ public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
         flag(a &= mem(one));
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 3;
     }
 };
 
@@ -293,6 +384,9 @@ public:
     void execute (unsigned char one, unsigned char two) {
         flag(a |= one);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
+    }
 };
 
 class _0A : public Instruction {
@@ -301,6 +395,9 @@ public:
     void execute (unsigned char one, unsigned char two) {
         (a >> 7) ? set(0) : clr(0);
         flag(a = a << 1);
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
     }
 };
 
@@ -314,6 +411,9 @@ public:
         flag(temp);
         write(temp, one);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 5;
+    }
 };
 
 class _A6 : public Instruction {
@@ -321,6 +421,9 @@ public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
         flag(x = mem(one));
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 3;
     }
 };
 
@@ -332,6 +435,11 @@ public:
             pc += (char) one;
         }
     }
+    int cycles(unsigned char one, unsigned char two) {
+        extra = ((p & 0x2) == 0x2) ? 1 : 0;
+        extra_two = ((pc + (char)one) >> 8 != pc >> 8) ? 1 : 0;
+        return 2 + extra_two + extra;
+    }
 };
 
 class _18 : public Instruction {
@@ -339,6 +447,9 @@ public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
         clr(0);
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
     }
 };
 
@@ -360,6 +471,9 @@ public:
             exit(1);
         }
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
+    }
 };
 
 class _49 : public Instruction {
@@ -367,6 +481,9 @@ public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
         flag(a ^= one);
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
     }
 };
 
@@ -376,6 +493,9 @@ public:
     void execute (unsigned char one, unsigned char two) {
         flag(x = a);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
+    }
 };
 
 class _05 : public Instruction {
@@ -383,6 +503,9 @@ public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
         flag(a |= mem(one));
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 3;
     }
 };
 
@@ -394,6 +517,9 @@ public:
         (a == one) ? set(1) : clr(1);
         (a < one) ? set(7) : clr(7);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
+    }
 };
 
 class _B0 : public Instruction {
@@ -404,6 +530,11 @@ public:
             pc += (char) one;
         }
     }
+    int cycles(unsigned char one, unsigned char two) {
+        extra = (p & 0x1) ? 1 : 0;
+        extra_two = ((pc + (char)one) >> 8 != pc >> 8) ? 1 : 0;
+        return 2 + extra_two + extra;
+    }
 };
 
 class _B5 : public Instruction {
@@ -411,6 +542,9 @@ public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
         flag(a = mem((one + x) & 0xFF));
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 4;
     }
 };
 
@@ -420,6 +554,11 @@ public:
     void execute (unsigned char one, unsigned char two) {
         flag(a &= mem(((one + (two << 8)) + y)));
     }
+    int cycles(unsigned char one, unsigned char two) {
+        sum = y + one;
+        extra = (sum >> 8) ? 1 : 0;
+        return 4 + extra;
+    }
 };
 
 class _55 : public Instruction {
@@ -428,6 +567,9 @@ public:
     void execute (unsigned char one, unsigned char two) {
         flag(a ^= mem((one + x) & 0xFF));
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 4;
+    }
 };
 
 class _88 : public Instruction {
@@ -435,6 +577,9 @@ public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
         flag(--y);
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
     }
 };
 
@@ -448,6 +593,9 @@ public:
         (a == 0) ? set(1) : clr(1);
         clr(7);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
+    }
 };
 
 class _59 : public Instruction {
@@ -455,6 +603,11 @@ public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
         flag(a ^= mem(((one + (two << 8)) + y)));
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        sum = y + one;
+        extra = (sum >> 8) ? 1 : 0;
+        return 4 + extra;
     }
 };
 
@@ -465,6 +618,9 @@ public:
         if (jumps) {
             pc = one + (two << 8) - 3;
         }
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 3;
     }
 };
 
@@ -486,6 +642,9 @@ public:
             exit(1);
         }
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 3;
+    }
 };
 
 class _6A : public Instruction {
@@ -497,6 +656,9 @@ public:
         (p & 0x1) ? (a |= 0x80) : (a &= 0x7F);
         flag(a);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
+    }
 };
 
 class _99 : public Instruction {
@@ -504,6 +666,9 @@ public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
         write(a, ((one + (two << 8)) + y));
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 5;
     }
 };
 
@@ -515,6 +680,9 @@ public:
         (y == one) ? set(1) : clr(1);
         (y < one) ? set(7) : clr(7);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
+    }
 };
 
 class _B1 : public Instruction {
@@ -522,6 +690,11 @@ public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
         flag(a = mem( (mem(one) + (mem(one + 1) << 8) + y)));
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        sum = y + mem(one);
+        extra = (sum >> 8) ? 1 : 0;
+        return 5 + extra;
     }
 };
 
@@ -531,6 +704,11 @@ public:
     void execute (unsigned char one, unsigned char two) {
         flag(a |= mem( (mem(one) + (mem(one + 1) << 8) + y)));
     }
+    int cycles(unsigned char one, unsigned char two) {
+        sum = y + mem(one);
+        extra = (sum >> 8) ? 1 : 0;
+        return 5 + extra;
+    }
 };
 
 class _48 : public Instruction {
@@ -538,6 +716,9 @@ public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
         write(a, sp--);
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 3;
     }
 };
 
@@ -549,6 +730,11 @@ public:
             pc += (char) one;
         }
     }
+    int cycles(unsigned char one, unsigned char two) {
+        extra = ((p & 0x1) == 0) ? 1 : 0;
+        extra_two = ((pc + (char)one) >> 8 != pc >> 8) ? 1 : 0;
+        return 2 + extra_two + extra;
+    }
 };
 
 class _68 : public Instruction {
@@ -556,6 +742,9 @@ public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
         a = mem(++sp);
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 4;
     }
 };
 
@@ -568,6 +757,9 @@ public:
             sp += 2;
         }
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 6;
+    }
 };
 
 class _51 : public Instruction {
@@ -576,6 +768,11 @@ public:
     void execute (unsigned char one, unsigned char two) {
         flag(a ^= mem( (mem(one) + (mem(one + 1) << 8) + y)));
     }
+    int cycles(unsigned char one, unsigned char two) {
+        sum = y + mem(one);
+        extra = (sum >> 8) ? 1 : 0;
+        return 5 + extra;
+    }
 };
 
 class _B9 : public Instruction {
@@ -583,6 +780,11 @@ public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
         flag(a = mem(((one + (two << 8)) + y)));
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        sum = y + one;
+        extra = (sum >> 8) ? 1 : 0;
+        return 4 + extra;
     }
 };
 
@@ -594,6 +796,9 @@ public:
         (y == mem(one)) ? set(1) : clr(1);
         (y < mem(one)) ? set(7) : clr(7);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 3;
+    }
 };
 
 class _F8 : public Instruction {
@@ -601,6 +806,9 @@ public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
         set(3);
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
     }
 };
 
@@ -611,6 +819,11 @@ public:
         if (jumps && (p >> 7)) {
             pc += (char) one;
         }
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        extra = (p >> 7) ? 1 : 0;
+        extra_two = ((pc + (char)one) >> 8 != pc >> 8) ? 1 : 0;
+        return 2 + extra_two + extra;
     }
 };
 
@@ -633,6 +846,9 @@ public:
             exit(1);
         }
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
+    }
 };
 
 class _3D : public Instruction {
@@ -640,6 +856,11 @@ public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
         flag(a &= mem((one + (two << 8) + x)));
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        sum = x + one;
+        extra = (sum >> 8) ? 1 : 0;
+        return 4 + extra;
     }
 };
 
@@ -650,6 +871,9 @@ public:
         (x < one) ? clr(0) : set(0);
         (x == one) ? set(1) : clr(1);
         (x < one) ? set(7) : clr(7);
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
     }
 };
 
@@ -663,6 +887,9 @@ public:
         (temp >> 7) ? set(7) : clr(7);
         write(temp, one);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 5;
+    }
 };
 
 class _24 : public Instruction {
@@ -673,6 +900,9 @@ public:
         (mem(one) >> 7) ? set(7) : clr(7);
         (mem(one) & 0x40) ? set(6) : clr(6);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 3;
+    }
 };
 
 class _98 : public Instruction {
@@ -681,6 +911,9 @@ public:
     void execute (unsigned char one, unsigned char two) {
         flag(a = y);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
+    }
 };
 
 class _B4 : public Instruction {
@@ -688,6 +921,9 @@ public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
         flag(y = mem((one + x) & 0xFF));
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 4;
     }
 };
 
@@ -699,6 +935,9 @@ public:
         (a == ((one + x) & 0xFF)) ? set(1) : clr(1);
         (a < ((one + x) & 0xFF)) ? set(7) : clr(7);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 4;
+    }
 };
 
 class _A4 : public Instruction {
@@ -706,6 +945,9 @@ public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
         flag(y = mem(one));
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 3;
     }
 };
 
@@ -715,6 +957,11 @@ public:
     void execute (unsigned char one, unsigned char two) {
         flag(x = mem((one + (two << 8) + y)));
     }
+    int cycles(unsigned char one, unsigned char two) {
+        sum = y + one;
+        extra = (sum >> 8) ? 1 : 0;
+        return 4 + extra;
+    }
 };
 
 class _38 : public Instruction {
@@ -722,6 +969,9 @@ public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
         set(0);
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
     }
 };
 
@@ -744,6 +994,9 @@ public:
             exit(1);
         }
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 4;
+    }
 };
 
 class _00 : public Instruction {
@@ -758,6 +1011,9 @@ public:
 
             pc = mem(0x1FFE) + (mem(0x1FFF) << 8) - 1;
         }
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 7;
     }
 };
 
@@ -780,6 +1036,9 @@ public:
             exit(1);
         }
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 4;
+    }
 };
 
 class _C5 : public Instruction {
@@ -790,6 +1049,9 @@ public:
         (a == mem(one)) ? set(1) : clr(1);
         (a < mem(one)) ? set(7) : clr(7);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 3;
+    }
 };
 
 class _08 : public Instruction {
@@ -797,6 +1059,9 @@ public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
         write(p, sp--);
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 3;
     }
 };
 
@@ -806,6 +1071,9 @@ public:
     void execute (unsigned char one, unsigned char two) {
         p = mem(++sp);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 4;
+    }
 };
 
 class _19 : public Instruction {
@@ -813,6 +1081,11 @@ public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
         flag(a |= mem((one + (two << 8) + y)));
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        sum = y + one;
+        extra = (sum >> 8) ? 1 : 0;
+        return 4 + extra;
     }
 };
 
@@ -825,6 +1098,9 @@ public:
         flag(temp);
         write(temp, (one + (two << 8) + x));
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 7;
+    }
 };
 
 class _01 : public Instruction {
@@ -832,6 +1108,9 @@ public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
         flag(a |= mem( (mem((one + x) & 0xFF) + (mem((one + x + 1) & 0xFF) << 8))));
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 4;
     }
 };
 
@@ -845,6 +1124,9 @@ public:
         flag(temp);
         write(temp, (one + (two << 8)));
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 6;
+    }
 };
 
 class _2C : public Instruction {
@@ -855,12 +1137,18 @@ public:
         (mem((one + (two << 8))) >> 7) ? set(7) : clr(7);
         (mem((one + (two << 8))) & 0x40) ? set(6) : clr(6);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 4;
+    }
 };
 
 class NOP : public Instruction {
 public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {}
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
+    }
 };
 
 class _3E : public Instruction {
@@ -874,6 +1162,10 @@ public:
         flag(temp);
         write(temp, addr);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 7;
+    }
+
 };
 
 class _0E : public Instruction {
@@ -885,6 +1177,10 @@ public:
         flag(temp);
         write(temp, (one + (two << 8)));
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 6;
+    }
+
 };
 
 class _2A : public Instruction {
@@ -896,6 +1192,10 @@ public:
         if (p & 0x1) temp |= 0x1;
         flag(a = temp);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
+    }
+
 };
 
 class _40 : public Instruction {
@@ -908,6 +1208,10 @@ public:
             sp += 3;
         }
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 6;
+    }
+
 };
 
 class _70 : public Instruction {
@@ -918,6 +1222,12 @@ public:
             pc += (char) one;
         }
     }
+    int cycles(unsigned char one, unsigned char two) {
+        extra = ((p & 0x40) == 0x40) ? 1 : 0;
+        extra_two = ((pc + (char)one) >> 8 != pc >> 8) ? 1 : 0;
+        return 2 + extra_two + extra;
+    }
+
 };
 
 class _50 : public Instruction {
@@ -928,6 +1238,12 @@ public:
             pc += (char) one;
         }
     }
+    int cycles(unsigned char one, unsigned char two) {
+        extra = ((p & 0x40) == 0) ? 1 : 0;
+        extra_two = ((pc + (char)one) >> 8 != pc >> 8) ? 1 : 0;
+        return 2 + extra_two + extra;
+    }
+
 };
 
 class _15 : public Instruction {
@@ -936,6 +1252,10 @@ public:
     void execute (unsigned char one, unsigned char two) {
         flag(a |= mem((one + x) & 0xFF));
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 4;
+    }
+
 };
 
 class _E4 : public Instruction {
@@ -946,6 +1266,10 @@ public:
         (x == mem(one)) ? set(1) : clr(1);
         (x < mem(one)) ? set(7) : clr(7);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 3;
+    }
+
 };
 
 class _EE : public Instruction {
@@ -955,6 +1279,10 @@ public:
         write(mem(one + (two << 8)) + 1, (one + (two << 8)));
         flag(mem((one + (two << 8))));
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 6;
+    }
+
 };
 
 class _AE : public Instruction {
@@ -962,6 +1290,10 @@ public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
         flag(x = mem((one + (two << 8))));
+    }
+
+    int cycles(unsigned char one, unsigned char two) {
+        return 4;
     }
 };
 
@@ -984,6 +1316,9 @@ public:
             exit(1);
         }
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 4;
+    }
 };
 
 class _FE : public Instruction {
@@ -994,6 +1329,9 @@ public:
         write(mem(temp_two) + 1, temp_two);
         flag(mem(temp_two));
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 7;
+    }
 };
 
 class _8C : public Instruction {
@@ -1001,6 +1339,9 @@ public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
         write(y, (one + (two << 8)));
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 4;
     }
 };
 
@@ -1015,6 +1356,9 @@ public:
         flag(temp);
         write(temp, addr);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 6;
+    }
 };
 
 class _36 : public Instruction {
@@ -1028,6 +1372,9 @@ public:
         flag(temp);
         write(temp, addr);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 6;
+    }
 };
 
 class _2D : public Instruction {
@@ -1036,6 +1383,9 @@ public:
     void execute (unsigned char one, unsigned char two) {
         flag(a &= mem(one + (two << 8)));
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 4;
+    }
 };
 
 class _8D : public Instruction {
@@ -1043,6 +1393,9 @@ public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
         write(a, one + (two << 8));
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 4;
     }
 };
 
@@ -1053,6 +1406,9 @@ public:
         flag (mem((x + one) & 0xFF) - 1);
         write(mem((x + one) & 0xFF) - 1, (x + one) & 0xFF);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 6;
+    }
 };
 
 class _F6 : public Instruction {
@@ -1061,6 +1417,9 @@ public:
     void execute (unsigned char one, unsigned char two) {
         flag (mem((x + one) & 0xFF) + 1);
         write(mem((x + one) & 0xFF) + 1, (x + one) & 0xFF);
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 6;
     }
 };
 
@@ -1073,6 +1432,11 @@ public:
         (a == mem(temp)) ? set(1) : clr(1);
         (a < mem(temp)) ? set(7) : clr(7);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        sum = y + one;
+        extra = (sum >> 8) ? 1 : 0;
+        return 4 + extra;
+    }
 };
 
 class _DD : public Instruction {
@@ -1083,6 +1447,11 @@ public:
         (a < mem(temp)) ? clr(0) : set(0);
         (a == mem(temp)) ? set(1) : clr(1);
         (a < mem(temp)) ? set(7) : clr(7);
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        sum = x + one;
+        extra = (sum >> 8) ? 1 : 0;
+        return 4 + extra;
     }
 };
 
@@ -1095,6 +1464,9 @@ public:
         (p & 0x1) ? (temp |= 0x80) : (temp &= 0x7F);
         flag(temp);
         write(temp, one);
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 5;
     }
 };
 
@@ -1117,6 +1489,11 @@ public:
             exit(1);
         }
     }
+    int cycles(unsigned char one, unsigned char two) {
+        sum = y + one;
+        extra = (sum >> 8) ? 1 : 0;
+        return 4 + extra;
+    }
 };
 
 class _81 : public Instruction {
@@ -1124,6 +1501,9 @@ public:
     int length () { return 2; }
     void execute (unsigned char one, unsigned char two) {
         write(a, mem((one + x) & 0xFF));
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 6;
     }
 };
 
@@ -1133,6 +1513,9 @@ public:
     void execute (unsigned char one, unsigned char two) {
         write(a, mem(one) + y);
     }
+    int cycles(unsigned char one, unsigned char two) {
+        return 6;
+    }
 };
 
 class _6C : public Instruction {
@@ -1140,6 +1523,9 @@ public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
         pc = mem(one + (two << 8)) - 3;
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 5;
     }
 };
 

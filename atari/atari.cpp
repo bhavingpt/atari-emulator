@@ -17,7 +17,8 @@ void compute_cycle() {
             int inst_length = table.at(mem(pc))->length();
             table.at(mem(pc))->execute(mem(pc+1), mem(pc+2));
             pc += inst_length;
-            junk_cycles = 2; // = table.at(mem(pc))->cycles() - 1; // TODO do these
+            junk_cycles = table.at(mem(pc))->
+                cycles(mem(pc+1), mem(pc+2)) - 1;
         } catch (const std::out_of_range& oor) {
             printf("\n%x: UNKNOWN OPCODE %02x\n\n", pc - 0x1000, mem(pc));
             exit(1);

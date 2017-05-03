@@ -1034,11 +1034,30 @@ class _2D : public Instruction {
 public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
-        printf("TODO: 2D\n");
+        flag(a &= mem(one + (two << 8)));
+    }
+};
+
+class _8D : public Instruction {
+public:
+    int length () { return 3; }
+    void execute (unsigned char one, unsigned char two) {
+        write(a, one + (two << 8));
+    }
+};
+
+class _D6 : public Instruction {
+public:
+    int length () { return 2; }
+    void execute (unsigned char one, unsigned char two) {
+        flag (mem((x + one) & 0xFF) - 1);
+        write(mem((x + one) & 0xFF) - 1, (x + one) & 0xFF);
     }
 };
 
 void initialize_instructions() {
+    table.insert(pair<unsigned char, Instruction*>('\xD6', new _D6()));
+    table.insert(pair<unsigned char, Instruction*>('\x8D', new _8D()));
     table.insert(pair<unsigned char, Instruction*>('\x2D', new _2D()));
     table.insert(pair<unsigned char, Instruction*>('\x36', new _36()));
     table.insert(pair<unsigned char, Instruction*>('\x76', new _76()));
@@ -1070,6 +1089,7 @@ void initialize_instructions() {
     table.insert(pair<unsigned char, Instruction*>('\x44', new NOP()));
     table.insert(pair<unsigned char, Instruction*>('\x42', new NOP()));
     table.insert(pair<unsigned char, Instruction*>('\x72', new NOP()));
+    table.insert(pair<unsigned char, Instruction*>('\xea', new NOP()));
     table.insert(pair<unsigned char, Instruction*>('\x02', new NOP()));
     table.insert(pair<unsigned char, Instruction*>('\x77', new NOP()));
     table.insert(pair<unsigned char, Instruction*>('\x07', new NOP()));

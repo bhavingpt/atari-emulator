@@ -1,4 +1,4 @@
-CFLAGS = -ggdb3 -std=c++11 -O0 -Wall -Werror
+CFLAGS = -ggdb3 -std=c++11 -O0 -Wall -Werror `/Users/Bhavin/Desktop/SDL2-2.0.5/sdl2-config --cflags --libs`
 CC = g++
 
 EXE = atari

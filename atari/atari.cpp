@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include "reada26.h"
 #include "instructions.h"
+#include "SDL.h"
 
 uint16_t pc = 0x1000;
 uint8_t a, x, y, p;
@@ -20,11 +21,19 @@ void next_instruction() {
     }
 }
 
-int main(int argc, char** argv) {
+extern "C" int main(int argc, char** argv) { // cite stack overflow: see report
+    //Start SDL
+    SDL_Init( SDL_INIT_EVERYTHING );
+
+    //Quit SDL
+    SDL_Quit();
+
     initialize_instructions();
     setup(argv[1]);
 
     while (running) {
         next_instruction();
     }
+
+    return 0;
 }

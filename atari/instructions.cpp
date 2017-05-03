@@ -1055,7 +1055,103 @@ public:
     }
 };
 
+class _F6 : public Instruction {
+public:
+    int length () { return 2; }
+    void execute (unsigned char one, unsigned char two) {
+        flag (mem((x + one) & 0xFF) + 1);
+        write(mem((x + one) & 0xFF) + 1, (x + one) & 0xFF);
+    }
+};
+
+class _D9 : public Instruction {
+public:
+    int length () { return 3; }
+    void execute (unsigned char one, unsigned char two) {
+        temp = one + (two << 8) + y;
+        (a < mem(temp)) ? clr(0) : set(0);
+        (a == mem(temp)) ? set(1) : clr(1);
+        (a < mem(temp)) ? set(7) : clr(7);
+    }
+};
+
+class _DD : public Instruction {
+public:
+    int length () { return 3; }
+    void execute (unsigned char one, unsigned char two) {
+        temp = one + (two << 8) + x;
+        (a < mem(temp)) ? clr(0) : set(0);
+        (a == mem(temp)) ? set(1) : clr(1);
+        (a < mem(temp)) ? set(7) : clr(7);
+    }
+};
+
+class _66 : public Instruction {
+public:
+    int length () { return 2; }
+    void execute (unsigned char one, unsigned char two) {
+        (mem(one) & 0x1) ? set(0) : clr(0);
+        temp = mem(one) >> 1;
+        (p & 0x1) ? (temp |= 0x80) : (temp &= 0x7F);
+        flag(temp);
+        write(temp, one);
+    }
+};
+
+class _79 : public Instruction {
+public:
+    int length () { return 3; }
+    void execute (unsigned char one, unsigned char two) {
+        temp = mem(one + (two << 8) + y);
+        if ((p & 0x8) == 0x8) { // binary mode
+            uint16_t result = a + (p & 0x1) + temp;
+            (result == 0) ? set(1) : clr(1); // zero flag
+            ((result & 0x100) == 0x100) ? set(0) : clr(0); // carry flag
+            ((result & 0x80) == 0x80) ? set(7) : clr(7); // negative flag
+            ( ( (a >> 7) && (temp >> 7) && ((result & 0x80) == 0x0)  ) || // neg + neg = pos
+              ( ((a >> 7) == 0) && ((temp >> 7) == 0) && ((result & 0x80) == 0) ) ) ? // pos + pos = neg
+                set(6) : clr(6); // overflow flag
+            a = result & 0xFF; // set accumulator
+        } else {
+            printf("you need decimal mode!\n");
+            exit(1);
+        }
+    }
+};
+
+class _81 : public Instruction {
+public:
+    int length () { return 2; }
+    void execute (unsigned char one, unsigned char two) {
+        write(a, mem((one + x) & 0xFF));
+    }
+};
+
+class _91 : public Instruction {
+public:
+    int length () { return 2; }
+    void execute (unsigned char one, unsigned char two) {
+        write(a, mem(one) + y);
+    }
+};
+
+class _6C : public Instruction {
+public:
+    int length () { return 3; }
+    void execute (unsigned char one, unsigned char two) {
+        pc = mem(one + (two << 8)) - 3;
+    }
+};
+
 void initialize_instructions() {
+    table.insert(pair<unsigned char, Instruction*>('\x6C', new _6C()));
+    table.insert(pair<unsigned char, Instruction*>('\xDD', new _DD()));
+    table.insert(pair<unsigned char, Instruction*>('\x91', new _91()));
+    table.insert(pair<unsigned char, Instruction*>('\x81', new _81()));
+    table.insert(pair<unsigned char, Instruction*>('\x79', new _79()));
+    table.insert(pair<unsigned char, Instruction*>('\x66', new _66()));
+    table.insert(pair<unsigned char, Instruction*>('\xD9', new _D9()));
+    table.insert(pair<unsigned char, Instruction*>('\xF6', new _F6()));
     table.insert(pair<unsigned char, Instruction*>('\xD6', new _D6()));
     table.insert(pair<unsigned char, Instruction*>('\x8D', new _8D()));
     table.insert(pair<unsigned char, Instruction*>('\x2D', new _2D()));
@@ -1074,8 +1170,12 @@ void initialize_instructions() {
     table.insert(pair<unsigned char, Instruction*>('\x2a', new _2A()));
     table.insert(pair<unsigned char, Instruction*>('\x0e', new _0E()));
     table.insert(pair<unsigned char, Instruction*>('\x3e', new _3E()));
+    table.insert(pair<unsigned char, Instruction*>('\x9b', new NOP()));
+    table.insert(pair<unsigned char, Instruction*>('\xbb', new NOP()));
     table.insert(pair<unsigned char, Instruction*>('\x3c', new NOP()));
     table.insert(pair<unsigned char, Instruction*>('\x80', new NOP()));
+    table.insert(pair<unsigned char, Instruction*>('\x7c', new NOP()));
+    table.insert(pair<unsigned char, Instruction*>('\xa3', new NOP()));
     table.insert(pair<unsigned char, Instruction*>('\xf4', new NOP()));
     table.insert(pair<unsigned char, Instruction*>('\xc7', new NOP()));
     table.insert(pair<unsigned char, Instruction*>('\xf7', new NOP()));
@@ -1085,6 +1185,8 @@ void initialize_instructions() {
     table.insert(pair<unsigned char, Instruction*>('\x1c', new NOP()));
     table.insert(pair<unsigned char, Instruction*>('\x1a', new NOP()));
     table.insert(pair<unsigned char, Instruction*>('\x12', new NOP()));
+    table.insert(pair<unsigned char, Instruction*>('\x93', new NOP()));
+    table.insert(pair<unsigned char, Instruction*>('\x8b', new NOP()));
     table.insert(pair<unsigned char, Instruction*>('\x14', new NOP()));
     table.insert(pair<unsigned char, Instruction*>('\x44', new NOP()));
     table.insert(pair<unsigned char, Instruction*>('\x42', new NOP()));
@@ -1093,6 +1195,8 @@ void initialize_instructions() {
     table.insert(pair<unsigned char, Instruction*>('\x02', new NOP()));
     table.insert(pair<unsigned char, Instruction*>('\x77', new NOP()));
     table.insert(pair<unsigned char, Instruction*>('\x07', new NOP()));
+    table.insert(pair<unsigned char, Instruction*>('\x82', new NOP()));
+    table.insert(pair<unsigned char, Instruction*>('\x54', new NOP()));
     table.insert(pair<unsigned char, Instruction*>('\x22', new NOP()));
     table.insert(pair<unsigned char, Instruction*>('\x17', new NOP()));
     table.insert(pair<unsigned char, Instruction*>('\x03', new NOP()));

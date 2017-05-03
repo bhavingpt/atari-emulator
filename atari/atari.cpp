@@ -16,7 +16,7 @@ void next_instruction() {
         pc += inst_length;
     } catch (const std::out_of_range& oor) {
         printf("\n%x: UNKNOWN OPCODE %02x\n\n", pc - 0x1000, mem(pc));
-        running = 0;
+        exit(1);
     }
 }
 

@@ -18,14 +18,13 @@ void next_instruction() {
         printf("\n%x: UNKNOWN OPCODE %02x\n\n", pc - 0x1000, mem(pc));
         running = 0;
     }
-    running++;
 }
 
 int main(int argc, char** argv) {
     initialize_instructions();
     setup(argv[1]);
 
-    while (running < 2050) {
+    while (running) {
         next_instruction();
     }
 }

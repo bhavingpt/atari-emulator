@@ -189,8 +189,8 @@ public:
     int length () { return 3; }
     void execute (unsigned char one, unsigned char two) {
         if (jumps) {
-            write(((pc + 2) >> 8) & 0xFF, sp - 1);
-            write((pc + 2) & 0xFF, sp - 2);
+            write(((pc + 2) >> 8) & 0xFF, sp);
+            write((pc + 2) & 0xFF, sp - 1);
             sp -= 2;
             pc = (one + (two << 8)) - 3;
         }
@@ -751,8 +751,8 @@ public:
     int length () { return 1; }
     void execute (unsigned char one, unsigned char two) {
         if (jumps) {
-            write(((pc + 2) >> 8) & 0xFF, sp);
-            write((pc + 2) & 0xFF, sp - 1);
+            write(((pc + 1) >> 8) & 0xFF, sp);
+            write((pc + 1) & 0xFF, sp - 1);
             write(p | 0x10, sp - 2);
             sp -= 3;
 
@@ -1031,7 +1031,6 @@ public:
 };
 
 void initialize_instructions() {
-    printf("\n");
     table.insert(pair<unsigned char, Instruction*>('\x36', new _36()));
     table.insert(pair<unsigned char, Instruction*>('\x76', new _76()));
     table.insert(pair<unsigned char, Instruction*>('\x8c', new _8C()));

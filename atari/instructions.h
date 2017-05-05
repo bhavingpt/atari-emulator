@@ -13,6 +13,7 @@ extern uint16_t pc;
 extern uint8_t a, x, y, sp, p;
 
 void initialize_instructions();
+void write(unsigned char value, uint16_t location);
 unsigned char mem(uint16_t location);
 
 #endif

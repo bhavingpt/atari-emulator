@@ -3,6 +3,7 @@ Due: 5/5/2017 @ 11:59pm
 CITE: http://stackoverflow.com/questions/4591076/c-sdl-on-macosx-without-xcode/12473310#12473310
 CITE: Aditya V, Neil
 CITE: 6502 in one easy step, Andrew Davie's tutorial on graphics
+CITE: https://programmersranch.blogspot.com/2014/02/sdl2-pixel-drawing.html
 
 (1) What did you end up doing?
 

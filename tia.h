@@ -3,5 +3,6 @@
 
 void compute_cycle();
 void init_graphics();
+void print_pc();
 
 #endif

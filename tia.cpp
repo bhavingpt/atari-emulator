@@ -72,6 +72,9 @@ void init_graphics() {
             write(0xFF, 2); // set wsync to 0
         }
 
+        // TODO timers
+        // TODO keyboard input
+
         if (mem(0) != 0) {
             draw_frame();
             write(0, 0);
@@ -107,9 +110,9 @@ int get_colu() {
         if ((mem(10) & 0x2) == 0x2) {
             return (((x_pos - 68) / 4) < 20) ? 6 : 7; // return P0 or P1 as appropriate
         } else return 8;
-        return 8; // display the playfield
+        return 8; // display the playfield // TODO fix the bug in t4.bin
     }
-    return 9; // display background // TODO sprite-playfield precedence
+    return 9; // display background // TODO sprites & playfield precedence
 }
 
 unsigned char playfield() {

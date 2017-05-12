@@ -11,6 +11,7 @@ Online resources:
        ATARI GRAPHICS:       http://www.randomterrain.com/atari-2600-memories-tutorial-andrew-davie-01.html (the test bins are from here too!! - amazing link)
        Color palette:        https://github.com/ppeccin/javatari/blob/master/javatari/src/org/javatari/atari/tia/video/NTSCPalette.java
              ^ this is another emulator that had an array of NTSC hex codes -> RGB color values, which I copy / pasted to save time.
+       Memory map / mirror: http://problemkaputt.de/2k6specs.htm
 
 (1) What did you end up doing?
 

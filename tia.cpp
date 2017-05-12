@@ -11,6 +11,8 @@ void start_sdl();
 void end_sdl();
 void draw_frame();
 uint32_t convert_color(unsigned char);
+int get_colu();
+unsigned char playfield();
 
 char running = 1;
 const int WIDTH = 640;
@@ -36,7 +38,7 @@ void color_cycle() {
     }
 
     if (x_pos > 67 && y_pos > 39 && y_pos < 232) {
-        color = convert_color(mem(9));
+        color = convert_color(mem(get_colu()));
         for (int j = 0; j < 2; j++) {
             for (int i = 0; i < 4; i++) {
                 pixels[4*(x_pos-68) + i + 640*(2*(y_pos-40) + j)] = color;
@@ -83,6 +85,9 @@ void init_graphics() {
 
 void start_sdl() {
     write(0xFF, 2);
+    write(0x00, 13);
+    write(0x00, 14);
+    write(0x00, 15);
     SDL_Init( SDL_INIT_VIDEO );
     tv = SDL_CreateWindow("atari", 100, 100, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
     ren = SDL_CreateRenderer(tv, -1, SDL_RENDERER_ACCELERATED|SDL_RENDERER_PRESENTVSYNC);
@@ -97,8 +102,35 @@ void end_sdl() {
     SDL_Quit();
 }
 
+int get_colu() {
+    if (playfield()) {
+        if ((mem(10) & 0x2) == 0x2) {
+            return (((x_pos - 68) / 4) < 20) ? 6 : 7; // return P0 or P1 as appropriate
+        } else return 8;
+        return 8; // display the playfield
+    }
+    return 9; // display background // TODO sprite-playfield precedence
+}
+
+unsigned char playfield() {
+    int offset = ((x_pos - 68) / 4);
+    if ((mem(10) & 0x1) && offset > 19) {
+        offset = 19 - (offset % 20);
+    } else {
+        offset %= 20;
+    }
+
+    if (offset < 4) {
+        return (mem(13) >> (offset + 4)) & 0x1; // read playfield 0
+    } else if (offset < 12) {
+        return (mem(14) >> (11 - offset)) & 0x1; // read playfield 1
+    } else {
+        return (mem(15) >> (offset - 12)) & 0x1; // read playfield 2
+    }
+}
+
 uint32_t convert_color(unsigned char ntsc) {
-    uint32_t baseRGB[] = {
+    uint32_t palette[] = {
 		0x000000,		// 00
 		0x404040,		// 02
 		0x6c6c6c,		// 04
@@ -228,5 +260,5 @@ uint32_t convert_color(unsigned char ntsc) {
 		0xe8cc7c,		// FC
 		0xfce08c		// FE
 	};
-    return baseRGB[ntsc >> 1];
+    return palette[ntsc >> 1];
 }

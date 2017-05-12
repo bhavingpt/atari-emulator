@@ -133,7 +133,7 @@ unsigned char playfield() {
 }
 
 uint32_t convert_color(unsigned char ntsc) {
-    uint32_t palette[] = {
+    uint32_t palette[] = { // cite: java emulator, see the report part 2
 		0x000000,		// 00
 		0x404040,		// 02
 		0x6c6c6c,		// 04

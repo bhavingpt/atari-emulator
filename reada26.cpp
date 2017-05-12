@@ -20,7 +20,7 @@ void setup(char* filename) {
     FILE* fp = fopen(filename, "rb"); // file opening taken from my pc
     fseek(fp, 0, SEEK_END);
     size = ftell(fp);
-    fseek(fp, 0, SEEK_SET); // rewind the file
+    fseek(fp, 0, SEEK_SET); // rewind the file. cite: my pc
 
     exe = (unsigned char *) malloc(size * sizeof(char));
 

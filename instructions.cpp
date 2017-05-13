@@ -851,6 +851,54 @@ public:
     }
 };
 
+class _E5 : public Instruction {
+public:
+    int length () { return 2; }
+    void execute (unsigned char one, unsigned char two) {
+        temp = ~mem(one);
+        if ((p & 0x8) == 0x8) { // binary mode
+            uint16_t result = a - ~(p & 0x1) + temp;
+            (result == 0) ? set(1) : clr(1); // zero flag
+            ( a >= mem(one) ) ? set(0) : clr(0); // carry flag
+            ((result & 0x80) == 0x80) ? set(7) : clr(7); // negative flag
+            ( ( ((a >> 7) == 0) && (temp >> 7) && ((result & 0x80) == 0x0)  ) || // pos - neg = neg
+              ( (a >> 7) && ((temp >> 7) == 0) && ((result & 0x80) == 0) ) ) ? // neg - pos = pos
+                set(6) : clr(6); // overflow flag
+            a = result & 0xFF; // set accumulator
+        } else {
+            printf("you need decimal mode!\n");
+            exit(1);
+        }
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
+    }
+};
+
+class _FD : public Instruction {
+public:
+    int length () { return 2; }
+    void execute (unsigned char one, unsigned char two) {
+        temp = ~mem(one + (two << 8) + x);
+        if ((p & 0x8) == 0x8) { // binary mode
+            uint16_t result = a - ~(p & 0x1) + temp;
+            (result == 0) ? set(1) : clr(1); // zero flag
+            ( a >= ~temp ) ? set(0) : clr(0); // carry flag
+            ((result & 0x80) == 0x80) ? set(7) : clr(7); // negative flag
+            ( ( ((a >> 7) == 0) && (temp >> 7) && ((result & 0x80) == 0x0)  ) || // pos - neg = neg
+              ( (a >> 7) && ((temp >> 7) == 0) && ((result & 0x80) == 0) ) ) ? // neg - pos = pos
+                set(6) : clr(6); // overflow flag
+            a = result & 0xFF; // set accumulator
+        } else {
+            printf("you need decimal mode!\n");
+            exit(1);
+        }
+    }
+    int cycles(unsigned char one, unsigned char two) {
+        return 2;
+    }
+};
+
 class _3D : public Instruction {
 public:
     int length () { return 3; }
@@ -1530,6 +1578,8 @@ public:
 };
 
 void initialize_instructions() {
+    table.insert(pair<unsigned char, Instruction*>('\xFD', new _FD()));
+    table.insert(pair<unsigned char, Instruction*>('\xE5', new _E5()));
     table.insert(pair<unsigned char, Instruction*>('\x6C', new _6C()));
     table.insert(pair<unsigned char, Instruction*>('\xDD', new _DD()));
     table.insert(pair<unsigned char, Instruction*>('\x91', new _91()));

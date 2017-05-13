@@ -20,6 +20,8 @@ const int HEIGHT = 384;
 int x_pos, y_pos;
 int cpu_active = 1;
 uint32_t color;
+int increment = 1;
+int timer_counter = 0;
 
 uint32_t* pixels = new uint32_t[640*384];
 SDL_Window* tv = nullptr;
@@ -72,13 +74,43 @@ void init_graphics() {
             write(0xFF, 2); // set wsync to 0
         }
 
-        // TODO timers
-        // TODO keyboard input
-
+        // read vsync
         if (mem(0) != 0) {
             draw_frame();
             write(0, 0);
         }
+
+        // TODO keyboard input
+
+        // read timers
+        if (mem(0x294) != 0) {
+            increment = 1;
+            timer_counter = 0;
+            write(mem(0x294), 0x284);
+            write(0, 0x294);
+        } else if (mem(0x295 != 0)) {
+            increment = 8;
+            timer_counter = 0;
+            write(mem(0x295), 0x284);
+            write(0, 0x295);
+        } else if (mem(0x296 != 0)) {
+            increment = 64;
+            timer_counter = 0;
+            write(mem(0x296), 0x284);
+            write(0, 0x296);
+        } else if (mem(0x297 != 0)) {
+            increment = 1024;
+            timer_counter = 0;
+            write(mem(0x297), 0x284);
+            write(0, 0x297);
+        }
+
+        // increment timers
+        if (timer_counter = 0) {
+            write(mem(0x284) - 1, 0x284);
+        }
+        timer_counter++;
+        if (timer_counter == increment) timer_counter = 0;
 
         if (y_pos == 262) draw_frame();
     }
@@ -112,7 +144,7 @@ int get_colu() {
         } else return 8;
         return 8; // display the playfield // TODO fix the bug in t4.bin
     }
-    return 9; // display background // TODO sprites & playfield precedence
+    return 9; // display background
 }
 
 unsigned char playfield() {

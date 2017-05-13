@@ -15,12 +15,12 @@ Online resources:
 
 (1) What did you end up doing?
 
-I ended up writing an emulator for the Atari 2600. This involved parsing and loading game ROMs into memory, modeling the backend of a 6502 (or, more specifically, a 6507) processor, writing code that would handle ~130 separate instructions, and handling graphics and keyboard input.
+I ended up writing an emulator for the Atari 2600. This involved parsing and loading game ROMs into memory, modeling the backend of a 6502 (or, more specifically, a 6507) processor, writing code that would handle ~130 separate instructions, and handling graphics and the cpu timer.
 
 
 (2) What was hard?
 
-What wasn't hard? I did this project in C++, and I had never written a line of C++ in my life before it. I'd say the hardest part was finding good online documentation of tricky concepts like memory mirroring and indirect indexed addressing, and then implementing those in code without clear walkthroughs or guidelines - just intuition. The project involved a LOT of independent research and digging through old forums and Atari 2600 specifications to figure out corner cases for behavior or how the hardware, TIA chip, and PIA chip interacted with and even 'froze' the CPU. I also learned to use SDL to handle the graphics, input, and output.
+What wasn't hard? I did this project in C++, and I had never written a line of C++ in my life before it. I'd say the hardest part was finding good online documentation of tricky concepts like memory mirroring and indirect indexed addressing, and then implementing those in code without clear walkthroughs or guidelines - just intuition. The project involved a LOT of independent research and digging through old forums and Atari 2600 specifications to figure out corner cases for behavior or how the hardware, TIA chip, and PIA chip interacted with and even 'froze' the CPU. I also learned to use SDL to handle the graphics.
 
 (3) What did you learn?
 
@@ -30,9 +30,9 @@ The two most obvious skills that I will remember from this project for the next 
 
 (4) What should your score be (out of 100)?
 
-    I think I should get at least a 98! According to my google calendar and my commit history, I've spent about 35 hours working on pd, and I'm pretty happy with how it turned out. The project wasn't *entirely* complete, but the architecture part (emulating the processor) was 100% done. There are loose ends on graphics, but I think that's okay for how difficult the entire project is. It was hard, but fulfilling, and I learned a LOT.
+    I think I should get at least a 98! According to my google calendar and my commit history, I've spent about 40 hours working on pd, and I'm pretty happy with how it turned out. The project wasn't *entirely* complete, but the architecture part (emulating the processor) was 100% done. There are loose ends on graphics and input, but I think that's okay for how difficult the entire project is. It was hard, but fulfilling, and I learned a LOT. In addition, the part relating to 429H was completely done.
 
-    Current status: the 6502 processor should be fully functional! The games infinite loop when you run them (it's waiting for further input). I was only able to implement part of graphics, including displaying the background and playfield (not sprites yet), as well as handling keyboard input and timers. Since a lot of games do require those, *there are some sample .bins that will showcase the colorfulness of 1970s televisions. As mentioned above, these sample bins come from Andrew Davies, who has an online tutorial I followed about the graphics.
+    Current status: the 6502 processor should be fully functional! The games infinite loop when you run them (it's waiting for further input). I was only able to implement part of graphics, including displaying the background and playfield (not sprites yet), as well as handling the timers for the PIA/RIOT. I haven't implemented keyboard input, however, and since a lot of games do require those, there are some sample .bins that will showcase the colorfulness of 1970s video games. As mentioned above, these sample bins come from Andrew Davies, who has an online tutorial I followed about the graphics.
 
 
 (5) Give me clear and concise instruction that would help me:
@@ -57,14 +57,14 @@ The two most obvious skills that I will remember from this project for the next 
 
             ii) reada26.cpp:        Reads the file. It puts the ROM in an unsigned char array - straightforward stuff.
 
-            iii) instructions.cpp:  Oh boy.
+            iii) instructions.cpp: 
 
                                In instructions.h, there is a definition of an abstract class 'Instruction'. atari.cpp uses that interface to execute instructions.
                                This file defines roughly 120 subclasses of Instruction, each of which has a different execute(), different length, and different cycle count.
                                It also has a hashmap of opcodes to Instructions, so that the appropriate object can just be called. Hashmap insertions are at the bottom.
                                At the top are useful methods for memory mirroring (turning a 6502 into a 6507), and a sanitized memory interface that mirrors.
 
-            iv) tia.cpp:            The tia.cpp is also no joke.
+            iv) tia.cpp:     
 
                                It is initialized by atari.cpp, but ironically it controls the CPU. The TIA infinitely runs 3x something called a 'color_cycle', which is
                                meant to draw a single pixel - followed by exactly one cycle of the CPU. It also contains code that starts up SDL textures and the SDL window,

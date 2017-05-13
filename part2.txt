@@ -39,7 +39,11 @@ The two most obvious skills that I will remember from this project for the next 
 
      (a) run your code and see that it worked
 
-         There is a makefile, and running 'make clean && make' will generate an executable called atari.
+         SDL is needed to view the graphics output. I installed SDL on a mac by unzipping the tar file found here: https://www.libsdl.org/download-2.0.php
+             (SDL-2.0.5.tar.gz), and adding it to the path of my Makefile so it could be found. You will have to modify the Makefile to the path of the folder
+             'SDL-2.0.5/sdl2-config'. Note that this is a subfolder of the entire expansion!! Those instructions *should* work on non-Mac machines, but that's untested.
+
+         The commit includes the latest executable, called 'atari'. However, there is a makefile, and running 'make clean && make' will generate it.
          Running './atari BIN_NAME' will load the bin and begin executing it.
 
          Some games like pacman are included! They don't work fully, though. Try the test bins - t1.bin, t2.bin, t3.bin, etc.
@@ -57,7 +61,7 @@ The two most obvious skills that I will remember from this project for the next 
 
                                In instructions.h, there is a definition of an abstract class 'Instruction'. atari.cpp uses that interface to execute instructions.
                                This file defines roughly 120 subclasses of Instruction, each of which has a different execute(), different length, and different cycle count.
-                               It also has a hashmap of opcodes to Instructions, so that the appropriate object can just be called. The 100 hashmap insertions are at the bottom.
+                               It also has a hashmap of opcodes to Instructions, so that the appropriate object can just be called. Hashmap insertions are at the bottom.
                                At the top are useful methods for memory mirroring (turning a 6502 into a 6507), and a sanitized memory interface that mirrors.
 
             iv) tia.cpp:            The tia.cpp is also no joke.
